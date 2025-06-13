@@ -857,6 +857,39 @@ void TomatoPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint sh
 
 }
 
+void CherryTomatoPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age ){
+
+    if( shoot_node_index<8 || phytomer->rank>1 ){
+        phytomer->setFloralBudState(BUD_DEAD);
+        phytomer->setVegetativeBudState(BUD_DEAD);
+    }
+
+    //set leaf and internode scale based on position along the shoot
+    float leaf_scale = fmin(1.f, 0.7 + 0.3 * plant_age / 15.f);
+    phytomer->scaleLeafPrototypeScale(leaf_scale);
+
+    //set internode length based on position along the shoot
+    float inode_scale = fmin(1.f, 0.7 + 0.3 * plant_age / 10.f);
+    phytomer->scaleInternodeMaxLength(inode_scale);
+
+}
+
+void CherryTomatoPhytomerCallbackFunction( std::shared_ptr<Phytomer> phytomer ){
+
+    float pruning_height = 1.f;
+    float pruning_day = 101.f;
+
+    float plant_age = phytomer->parent_shoot_ptr->plantarchitecture_ptr->getPlantAge(phytomer->plantID);
+
+    if( phytomer->hasLeaf() && plant_age >= pruning_day  ) {
+        float height = phytomer->getInternodeNodePositions().at(0).z;
+        if ( height< pruning_height ) {
+            phytomer->removeLeaf();
+        }
+    }
+
+}
+
 uint WalnutFruitPrototype( helios::Context* context_ptr, uint subdivisions ){
     std::vector<uint> UUIDs = context_ptr->loadOBJ( "plugins/plantarchitecture/assets/obj/WalnutHull.obj", make_vec3(0.,0,0), 0,nullrotation, RGB::black, "ZUP", true );
     uint objID = context_ptr->addPolymeshObject( UUIDs );
