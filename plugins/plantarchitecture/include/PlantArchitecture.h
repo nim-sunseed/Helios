@@ -1745,6 +1745,10 @@ protected:
 
     uint buildStrawberryPlant( const helios::vec3 &base_position );
 
+    void initializeStrawberry_annual_Shoots();
+
+    uint buildStrawberry_annual_Plant( const helios::vec3 &base_position );
+
     void initializeSugarbeetShoots();
 
     uint buildSugarbeetPlant( const helios::vec3 &base_position );

@@ -69,6 +69,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildSoybeanPlant(base_position);
     }else if( current_plant_model == "strawberry" ) {
         plantID = buildStrawberryPlant(base_position);
+    }else if( current_plant_model == "strawberry_annual") {
+        plantID = buildStrawberry_annual_Plant(base_position);
     }else if( current_plant_model == "sugarbeet" ) {
         plantID = buildSugarbeetPlant(base_position);
     }else if( current_plant_model == "tomato" ) {
@@ -166,6 +168,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeSoybeanShoots();
     }else if( plant_label == "strawberry" ) {
         initializeStrawberryShoots();
+    }else if( plant_label == "strawberry_annual" ) {
+        initializeStrawberry_annual_Shoots();
     }else if( plant_label == "sugarbeet" ) {
         initializeSugarbeetShoots();
     }else if( plant_label == "tomato" ) {
@@ -2566,6 +2570,124 @@ uint PlantArchitecture::buildStrawberryPlant(const helios::vec3 &base_position) 
     if (shoot_types.empty()) {
         //automatically initialize strawberry plant shoots
         initializeStrawberryShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+    uint uID_stem = addBaseStemShoot(plantID, 1, base_rotation, 0.001, 0.004, 0.01, 0.01, 0, "mainstem");
+
+    breakPlantDormancy(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 0, 40, 5, 5, 30, 100, false);
+
+    plant_instances.at(plantID).max_age = 365;
+
+    return plantID;
+
+}
+
+void PlantArchitecture::initializeStrawberry_annual_Shoots() {
+
+    // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/StrawberryLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 1.f;
+    leaf_prototype.midrib_fold_fraction = 0.2f;
+    leaf_prototype.longitudinal_curvature = 0.15f;
+    leaf_prototype.lateral_curvature = 0.4f;
+    leaf_prototype.wave_period = 0.3f;
+    leaf_prototype.wave_amplitude = 0.01f;
+    leaf_prototype.subdivisions = 6;
+    leaf_prototype.unique_prototypes = 10;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 10;
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(80,100);
+    phytomer_parameters.internode.radius_initial = 0.001;
+    phytomer_parameters.internode.color = make_RGBcolor(0.38, 0.48, 0.1);
+    phytomer_parameters.internode.length_segments = 1;
+
+    phytomer_parameters.petiole.petioles_per_internode = 1;
+    phytomer_parameters.petiole.pitch.uniformDistribution(0,45);
+    phytomer_parameters.petiole.radius = 0.0025;
+    phytomer_parameters.petiole.length.uniformDistribution(0.15,0.25);
+    phytomer_parameters.petiole.taper = 0.5;
+    phytomer_parameters.petiole.curvature.uniformDistribution(-300,100);
+    phytomer_parameters.petiole.color = make_RGBcolor(0.24, 0.28, 0.08);
+    phytomer_parameters.petiole.length_segments = 5;
+
+    phytomer_parameters.leaf.leaves_per_petiole = 3;
+    phytomer_parameters.leaf.pitch.uniformDistribution(-30,10);
+    phytomer_parameters.leaf.yaw = 20;
+    phytomer_parameters.leaf.roll = -30;
+    phytomer_parameters.leaf.leaflet_offset = 0.01;
+    phytomer_parameters.leaf.leaflet_scale = 1.0;
+    phytomer_parameters.leaf.prototype_scale = 0.1;
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters.peduncle.length = 0.17;
+    phytomer_parameters.peduncle.radius = 0.00075;
+    phytomer_parameters.peduncle.pitch = 35;
+    phytomer_parameters.peduncle.roll = 0;
+    phytomer_parameters.peduncle.curvature = -200;
+    phytomer_parameters.peduncle.length_segments = 5;
+    phytomer_parameters.peduncle.radial_subdivisions = 6;
+    phytomer_parameters.peduncle.color = phytomer_parameters.petiole.color;
+
+    phytomer_parameters.inflorescence.flowers_per_peduncle.uniformDistribution(1, 3);
+    phytomer_parameters.inflorescence.flower_offset = 0.2;
+    phytomer_parameters.inflorescence.pitch = 70;
+    phytomer_parameters.inflorescence.roll = 90;
+    phytomer_parameters.inflorescence.flower_prototype_scale = 0.04;
+    phytomer_parameters.inflorescence.flower_prototype_function = StrawberryFlowerPrototype;
+    phytomer_parameters.inflorescence.fruit_prototype_scale = 0.06;
+    phytomer_parameters.inflorescence.fruit_prototype_function = StrawberryFruitPrototype;
+    phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.65;
+
+    // ---- Shoot Parameters ---- //
+
+    ShootParameters shoot_parameters(context_ptr->getRandomGenerator());
+    shoot_parameters.phytomer_parameters = phytomer_parameters;
+
+    shoot_parameters.max_nodes = 15;
+    shoot_parameters.insertion_angle_tip = 40;
+    shoot_parameters.insertion_angle_decay_rate = 0;
+    shoot_parameters.internode_length_max = 0.015;
+    shoot_parameters.internode_length_decay_rate = 0;
+    shoot_parameters.internode_length_min = 0.0;
+    shoot_parameters.base_roll = 90;
+    shoot_parameters.base_yaw.uniformDistribution(-20,20);
+    shoot_parameters.gravitropic_curvature.uniformDistribution(-10,0);
+    shoot_parameters.tortuosity = 0;
+
+    shoot_parameters.phyllochron_min = 2;
+    shoot_parameters.elongation_rate_max = 0.1;
+    shoot_parameters.girth_area_factor = 2.f;
+    shoot_parameters.vegetative_bud_break_time = 15;
+    shoot_parameters.vegetative_bud_break_probability_min = 0.1;
+    shoot_parameters.vegetative_bud_break_probability_decay_rate = -0.4;
+    shoot_parameters.flower_bud_break_probability = 1;
+    shoot_parameters.fruit_set_probability = 0.5;
+    shoot_parameters.flowers_require_dormancy = false;
+    shoot_parameters.growth_requires_dormancy = false;
+    shoot_parameters.determinate_shoot_growth = true;
+
+    shoot_parameters.defineChildShootTypes({"mainstem"},{1.0});
+
+    defineShootType("mainstem",shoot_parameters);
+
+}
+
+uint PlantArchitecture::buildStrawberry_annual_Plant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        //automatically initialize strawberry plant shoots
+        initializeStrawberry_annual_Shoots();
     }
 
     uint plantID = addPlantInstance(base_position, 0);
