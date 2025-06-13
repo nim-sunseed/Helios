@@ -859,7 +859,7 @@ void TomatoPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint sh
 
 void CherryTomatoPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age ){
 
-    if( shoot_node_index<8 || phytomer->rank>1 ){
+    if( shoot_node_index<8 || phytomer->rank>1 ){  // WAS EARLIER 8
         phytomer->setFloralBudState(BUD_DEAD);
         phytomer->setVegetativeBudState(BUD_DEAD);
     }

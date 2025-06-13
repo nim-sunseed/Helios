@@ -26,7 +26,7 @@ int main(){
    plantarchitecture.loadPlantModelFromLibrary("cherrytomato");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(100);
+   plantarchitecture.advanceTime(90);
     float height = plantarchitecture.getPlantHeight(plantID);
    std::cout<< height<< std::endl;
   ///////////////////////
