@@ -77,6 +77,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildTomatoPlant(base_position);
     }else if( current_plant_model == "cherrytomato" ) {
         plantID = buildCherryTomatoPlant(base_position);
+    }else if( current_plant_model == "turmeric" ) {
+        plantID = buildTurmericPlant(base_position);
     }else if( current_plant_model == "walnut" ) {
         plantID = buildWalnutTree(base_position);
     }else if( current_plant_model == "wheat" ) {
@@ -178,6 +180,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeTomatoShoots();
     }else if( plant_label == "cherrytomato" ) {
         initializeCherryTomatoShoots();
+    }else if( plant_label == "turmeric" ) {
+        initializeTurmericShoots();
     }else if( plant_label == "walnut" ) {
         initializeWalnutTreeShoots();
     }else if( plant_label == "wheat" ) {
@@ -3062,6 +3066,126 @@ uint PlantArchitecture::buildCherryTomatoPlant(const helios::vec3 &base_position
     setPlantPhenologicalThresholds(plantID, 0, 84, 10, 14, 38, 1000, false);
 
     plant_instances.at(plantID).max_age = 120;  // this is when height equals 1.8 m 
+
+    return plantID;
+
+}
+
+void PlantArchitecture::initializeTurmericShoots() {
+
+    // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/TurmericLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.2;
+    leaf_prototype.midrib_fold_fraction = 0.2f;
+    leaf_prototype.longitudinal_curvature = -0.35f;  //wsa init 0.15
+    leaf_prototype.lateral_curvature = 0.4f;
+    leaf_prototype.wave_period = 0.3f;
+    leaf_prototype.wave_amplitude = 0.01f;
+    leaf_prototype.subdivisions = 6;
+    leaf_prototype.unique_prototypes = 5;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 10;
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(80,100);
+    phytomer_parameters.internode.radius_initial = 0.001;
+    phytomer_parameters.internode.color = make_RGBcolor(0.4, 0.6, 0.0);
+    phytomer_parameters.internode.length_segments = 1;
+
+    phytomer_parameters.petiole.petioles_per_internode = 1;
+    phytomer_parameters.petiole.pitch.uniformDistribution(0,10);
+    phytomer_parameters.petiole.radius = 0.0045;
+    phytomer_parameters.petiole.length.uniformDistribution(0.05,0.2);
+    phytomer_parameters.petiole.taper = 0.5;
+    phytomer_parameters.petiole.curvature.uniformDistribution(-300,100);
+    phytomer_parameters.petiole.color = make_RGBcolor(0.4, 0.6, 0.0);
+    phytomer_parameters.petiole.length_segments = 5;
+
+    phytomer_parameters.leaf.leaves_per_petiole = 1;
+    phytomer_parameters.leaf.pitch.uniformDistribution(-30,10);
+    phytomer_parameters.leaf.yaw = 20;
+    phytomer_parameters.leaf.roll = -30;
+    phytomer_parameters.leaf.leaflet_offset = 0.01;
+    phytomer_parameters.leaf.leaflet_scale = 1.0;
+    phytomer_parameters.leaf.prototype_scale = 0.4;
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters.peduncle.length = 0.17;
+    phytomer_parameters.peduncle.radius = 0.00075;
+    phytomer_parameters.peduncle.pitch = 35;
+    phytomer_parameters.peduncle.roll = 0;
+    phytomer_parameters.peduncle.curvature = -200;
+    phytomer_parameters.peduncle.length_segments = 5;
+    phytomer_parameters.peduncle.radial_subdivisions = 6;
+    phytomer_parameters.peduncle.color = phytomer_parameters.petiole.color;
+
+    phytomer_parameters.inflorescence.flowers_per_peduncle.uniformDistribution(1, 3);
+    phytomer_parameters.inflorescence.flower_offset = 0.2;
+    phytomer_parameters.inflorescence.pitch = 70;
+    phytomer_parameters.inflorescence.roll = 90;
+    phytomer_parameters.inflorescence.flower_prototype_scale = 0.04;
+    phytomer_parameters.inflorescence.flower_prototype_function = StrawberryFlowerPrototype;
+    phytomer_parameters.inflorescence.fruit_prototype_scale = 0.06;
+    phytomer_parameters.inflorescence.fruit_prototype_function = StrawberryFruitPrototype;
+    phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.65;
+
+    // ---- Shoot Parameters ---- //
+
+    ShootParameters shoot_parameters(context_ptr->getRandomGenerator());
+    shoot_parameters.phytomer_parameters = phytomer_parameters;
+
+    shoot_parameters.max_nodes = 15;
+    shoot_parameters.insertion_angle_tip = 40;
+    shoot_parameters.insertion_angle_decay_rate = 0;
+    shoot_parameters.internode_length_max = 0.015;
+    shoot_parameters.internode_length_decay_rate = 0;
+    shoot_parameters.internode_length_min = 0.0;
+    shoot_parameters.base_roll = 90;
+    shoot_parameters.base_yaw.uniformDistribution(-20,20);
+    shoot_parameters.gravitropic_curvature.uniformDistribution(-10,0);
+    shoot_parameters.tortuosity = 0;
+
+    shoot_parameters.phyllochron_min = 20;
+    shoot_parameters.elongation_rate_max = 0.1;
+    shoot_parameters.girth_area_factor = 2.f;
+    shoot_parameters.vegetative_bud_break_time = 15;
+    shoot_parameters.vegetative_bud_break_probability_min = 0.01;
+    shoot_parameters.vegetative_bud_break_probability_decay_rate = -0.4;
+    shoot_parameters.flower_bud_break_probability = 1;
+    shoot_parameters.fruit_set_probability = 0.5;
+    shoot_parameters.flowers_require_dormancy = false;
+    shoot_parameters.growth_requires_dormancy = false;
+    shoot_parameters.determinate_shoot_growth = true;
+
+    shoot_parameters.defineChildShootTypes({"mainstem"},{1.0});
+
+    defineShootType("mainstem",shoot_parameters);
+
+}
+
+uint PlantArchitecture::buildTurmericPlant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        //automatically initialize  plant shoots
+        initializeTurmericShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+    uint uID_stem = addBaseStemShoot(plantID, 1, base_rotation, 0.001, 0.004, 0.01, 0.01, 0, "mainstem");
+
+    breakPlantDormancy(plantID);
+
+    //we do not want this plant to flower - hence time to flowering is more than plant age, as a hack
+
+    setPlantPhenologicalThresholds(plantID, 0, 1000, 5, 5, 0, 100000, 100000, true);
+
+    plant_instances.at(plantID).max_age = 180;
 
     return plantID;
 

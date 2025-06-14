@@ -22,11 +22,11 @@ int main(){
 
    /// plant architecture plugin here
 
-   PlantArchitecture plantarchitecture(&context); //SS_Okra
-   plantarchitecture.loadPlantModelFromLibrary("cherrytomato");
+   PlantArchitecture plantarchitecture(&context); 
+   plantarchitecture.loadPlantModelFromLibrary("turmeric");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(280);
+   plantarchitecture.advanceTime(260);
     float height = plantarchitecture.getPlantHeight(plantID);
    std::cout<< height<< std::endl;
   ///////////////////////

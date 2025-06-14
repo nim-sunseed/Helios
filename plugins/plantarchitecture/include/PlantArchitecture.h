@@ -1761,6 +1761,10 @@ protected:
 
     uint buildCherryTomatoPlant( const helios::vec3 &base_position );
 
+    void initializeTurmericShoots();
+
+    uint buildTurmericPlant( const helios::vec3 &base_position );
+
     void initializeWalnutTreeShoots();
 
     uint buildWalnutTree( const helios::vec3 &base_position );
