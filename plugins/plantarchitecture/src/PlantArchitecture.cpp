@@ -3000,7 +3000,7 @@ void PlantArchitecture::advanceTime(uint plantID, float time_step_days) {
         }
 
         if (plant_instance.current_age <= plant_instance.max_age && plant_instance.current_age + dt_max > plant_instance.max_age) {
-            std::cout << "PlantArchitecture::advanceTime: Plant has reached its maximum supported age. No further growth will occur." << std::endl;
+            //std::cout << "PlantArchitecture::advanceTime: Plant has reached its maximum supported age. No further growth will occur." << std::endl;
         } else if (plant_instance.current_age >= plant_instance.max_age) {
             //update Context geometry
             shoot_tree->front()->updateShootNodes(true);

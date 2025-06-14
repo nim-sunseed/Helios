@@ -2603,7 +2603,7 @@ void PlantArchitecture::initializeStrawberry_annual_Shoots() {
     leaf_prototype.lateral_curvature = 0.4f;
     leaf_prototype.wave_period = 0.3f;
     leaf_prototype.wave_amplitude = 0.01f;
-    leaf_prototype.subdivisions = 6;
+    leaf_prototype.subdivisions = 4;
     leaf_prototype.unique_prototypes = 10;
 
     // ---- Phytomer Parameters ---- //
@@ -2676,7 +2676,7 @@ void PlantArchitecture::initializeStrawberry_annual_Shoots() {
     shoot_parameters.vegetative_bud_break_probability_min = 0.1;
     shoot_parameters.vegetative_bud_break_probability_decay_rate = -0.4;
     shoot_parameters.flower_bud_break_probability = 1;
-    shoot_parameters.fruit_set_probability = 0.5;
+    shoot_parameters.fruit_set_probability = 0.1; //reduced from 0.5 , for optimal primitive size
     shoot_parameters.flowers_require_dormancy = false;
     shoot_parameters.growth_requires_dormancy = false;
     shoot_parameters.determinate_shoot_growth = true;
@@ -2928,8 +2928,8 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     leaf_prototype.lateral_curvature = -0.8f;
     leaf_prototype.wave_period = 0.35f;
     leaf_prototype.wave_amplitude = 0.08f;
-    leaf_prototype.subdivisions = 7;
-    leaf_prototype.unique_prototypes = 5;
+    leaf_prototype.subdivisions = 2;  //reduced from 7 for optimization of primitives
+    leaf_prototype.unique_prototypes = 4; //reduced from 5 for opt.
 
     // ---- Phytomer Parameters ---- //
 
@@ -2940,7 +2940,7 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     phytomer_parameters.internode.radius_initial = 0.001;
     phytomer_parameters.internode.color = make_RGBcolor(0.2556, 0.3240, 0.0672);
     phytomer_parameters.internode.length_segments = 1;
-    phytomer_parameters.internode.radial_subdivisions = 14;
+    phytomer_parameters.internode.radial_subdivisions = 4;
 
     phytomer_parameters.petiole.petioles_per_internode = 1;
     phytomer_parameters.petiole.pitch.uniformDistribution(45,60);
@@ -2969,7 +2969,7 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     phytomer_parameters.peduncle.length_segments = 5;
     phytomer_parameters.peduncle.radial_subdivisions = 8;
 
-    phytomer_parameters.inflorescence.flowers_per_peduncle = 6;
+    phytomer_parameters.inflorescence.flowers_per_peduncle = 4;
     phytomer_parameters.inflorescence.flower_offset = 0.15;
     phytomer_parameters.inflorescence.pitch = 80;
     phytomer_parameters.inflorescence.roll.uniformDistribution(-10,10);
@@ -2989,7 +2989,7 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     ms_shoot_parameters.max_nodes = 100;
     ms_shoot_parameters.insertion_angle_tip = 30;
     ms_shoot_parameters.insertion_angle_decay_rate = 0;
-    ms_shoot_parameters.internode_length_max = 0.04;
+    ms_shoot_parameters.internode_length_max = 0.045;
     ms_shoot_parameters.internode_length_min = 0.0;
     ms_shoot_parameters.internode_length_decay_rate = 0;
     ms_shoot_parameters.base_roll = 90;
@@ -2998,27 +2998,27 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     ms_shoot_parameters.tortuosity = 1.5;
 
     ms_shoot_parameters.phyllochron_min = 4;
-    ms_shoot_parameters.elongation_rate_max = 0.1;
+    ms_shoot_parameters.elongation_rate_max = 0.2;
     ms_shoot_parameters.girth_area_factor = 1.f; //was earlier 2.f
     ms_shoot_parameters.vegetative_bud_break_time = 40;
-    ms_shoot_parameters.vegetative_bud_break_probability_min = 0.2;
+    ms_shoot_parameters.vegetative_bud_break_probability_min = 0.1;
     ms_shoot_parameters.vegetative_bud_break_probability_decay_rate = 0.0;
-    ms_shoot_parameters.flower_bud_break_probability = 0.5;
-    ms_shoot_parameters.fruit_set_probability = 0.9;
+    ms_shoot_parameters.flower_bud_break_probability = 0.3;
+    ms_shoot_parameters.fruit_set_probability = 0.1;
     ms_shoot_parameters.flowers_require_dormancy = false;
     ms_shoot_parameters.growth_requires_dormancy = false;
     ms_shoot_parameters.determinate_shoot_growth = false;
 
-    //////////////////////
+    ////////////////////// SECONDARY SHOOT DEFINITION BY NP
     ShootParameters sec_shoot_parameters(context_ptr->getRandomGenerator());
     sec_shoot_parameters.phytomer_parameters = phytomer_parameters;
     //sec_shoot_parameters.phytomer_parameters.phytomer_creation_function = CherryTomatoPhytomerCreationFunction;
     //sec_shoot_parameters.phytomer_parameters.phytomer_callback_function = CherryTomatoPhytomerCallbackFunction;
 
-    sec_shoot_parameters.max_nodes = 10;
+    sec_shoot_parameters.max_nodes = 1;
     sec_shoot_parameters.insertion_angle_tip = 30;
     sec_shoot_parameters.insertion_angle_decay_rate = 0;
-    sec_shoot_parameters.internode_length_max = 0.04;
+    sec_shoot_parameters.internode_length_max = 0.045;
     sec_shoot_parameters.internode_length_min = 0.0;
     sec_shoot_parameters.internode_length_decay_rate = 0;
     sec_shoot_parameters.base_roll = 90;
@@ -3061,7 +3061,7 @@ uint PlantArchitecture::buildCherryTomatoPlant(const helios::vec3 &base_position
 
     setPlantPhenologicalThresholds(plantID, 0, 84, 10, 14, 38, 1000, false);
 
-    plant_instances.at(plantID).max_age = 150;  // this is when height equals 2 m 
+    plant_instances.at(plantID).max_age = 120;  // this is when height equals 1.8 m 
 
     return plantID;
 
