@@ -2673,13 +2673,13 @@ void PlantArchitecture::initializeStrawberry_annual_Shoots() {
     shoot_parameters.gravitropic_curvature.uniformDistribution(-10,0);
     shoot_parameters.tortuosity = 0;
 
-    shoot_parameters.phyllochron_min = 6;
+    shoot_parameters.phyllochron_min = 7;
     shoot_parameters.elongation_rate_max = 0.1;
     shoot_parameters.girth_area_factor = 2.f;
     shoot_parameters.vegetative_bud_break_time = 15;
     shoot_parameters.vegetative_bud_break_probability_min = 0.1;
     shoot_parameters.vegetative_bud_break_probability_decay_rate = -0.4;
-    shoot_parameters.flower_bud_break_probability = 1;
+    shoot_parameters.flower_bud_break_probability = 0.1;
     shoot_parameters.fruit_set_probability = 0.1; //reduced from 0.5 , for optimal primitive size
     shoot_parameters.flowers_require_dormancy = false;
     shoot_parameters.growth_requires_dormancy = false;

@@ -23,11 +23,12 @@ int main(){
    /// plant architecture plugin here
 
    PlantArchitecture plantarchitecture(&context); 
-   plantarchitecture.loadPlantModelFromLibrary("turmeric");
+   plantarchitecture.loadPlantModelFromLibrary("cherrytomato");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(260);
+   plantarchitecture.advanceTime(140);
     float height = plantarchitecture.getPlantHeight(plantID);
+	//
    std::cout<< height<< std::endl;
   ///////////////////////
 
@@ -35,6 +36,6 @@ int main(){
 	vis_nir.buildContextGeometry(&context);
     vis_nir.plotInteractive(); //open an interactive graphics window 
 	std::cout<<"DONE"<<std::endl; 
-
+//issue from 90 to 110
 }
  
