@@ -23,10 +23,10 @@ int main(){
    /// plant architecture plugin here
 
    PlantArchitecture plantarchitecture(&context); 
-   plantarchitecture.loadPlantModelFromLibrary("cherrytomato");
+   plantarchitecture.loadPlantModelFromLibrary("capsicum");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(140);
+   plantarchitecture.advanceTime(240);
     float height = plantarchitecture.getPlantHeight(plantID);
 	//
    std::cout<< height<< std::endl;
