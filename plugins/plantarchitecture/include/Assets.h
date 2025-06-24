@@ -83,6 +83,8 @@ uint TomatoFruitPrototype( helios::Context* context_ptr, uint subdivisions );
 uint TomatoFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open=false );
 void TomatoPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age );
 
+void Senna_Alexandrina_PhytomerCreationFunction(std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age);
+
 void CherryTomatoPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age );
 void CherryTomatoPhytomerCallbackFunction( std::shared_ptr<Phytomer> phytomer );
 

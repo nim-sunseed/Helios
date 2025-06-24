@@ -73,6 +73,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildStrawberryPlant(base_position);
     }else if( current_plant_model == "strawberry_annual") {
         plantID = buildStrawberry_annual_Plant(base_position);
+    }else if( current_plant_model == "senna_alexandrina") {
+        plantID = buildSennaAlexandrina_Plant(base_position);
     }else if( current_plant_model == "sugarbeet" ) {
         plantID = buildSugarbeetPlant(base_position);
     }else if( current_plant_model == "tomato" ) {
@@ -178,6 +180,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeStrawberryShoots();
     }else if( plant_label == "strawberry_annual" ) {
         initializeStrawberry_annual_Shoots();
+    }else if( plant_label == "senna_alexandrina" ) {
+        initializeSennaAlexandrina_Shoots();
     }else if( plant_label == "sugarbeet" ) {
         initializeSugarbeetShoots();
     }else if( plant_label == "tomato" ) {
@@ -971,7 +975,7 @@ void PlantArchitecture::initializeCapsicumShoots() {
     shoot_parameters.phyllochron_min = 6;   //SLOWED DOWN FROM 3
     shoot_parameters.elongation_rate_max = 0.1;
     shoot_parameters.girth_area_factor = 2.f;
-    shoot_parameters.vegetative_bud_break_time = 30;
+    shoot_parameters.vegetative_bud_break_time = 30;  //ideally this should only delay the growth
     shoot_parameters.vegetative_bud_break_probability_min = 0.3;
     shoot_parameters.vegetative_bud_break_probability_decay_rate = 0;
     shoot_parameters.flower_bud_break_probability = 0.5;
@@ -3062,7 +3066,7 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/TomatoLeaf_centered.png";
     leaf_prototype.leaf_aspect_ratio = 0.6f;
     leaf_prototype.midrib_fold_fraction = 0.1f;
-    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.3, -0.15f);
+    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.3,-0.15f);
     leaf_prototype.lateral_curvature = -0.8f;
     leaf_prototype.wave_period = 0.35f;
     leaf_prototype.wave_amplitude = 0.08f;
@@ -3074,7 +3078,7 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
 
     phytomer_parameters.internode.pitch = 10;
-    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(14, 220);
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(140, 220);
     phytomer_parameters.internode.radius_initial = 0.001;
     phytomer_parameters.internode.color = make_RGBcolor(0.2556, 0.3240, 0.0672);
     phytomer_parameters.internode.length_segments = 1;
@@ -3200,6 +3204,157 @@ uint PlantArchitecture::buildCherryTomatoPlant(const helios::vec3 &base_position
     setPlantPhenologicalThresholds(plantID, 0, 84, 10, 14, 38, 1000, false);
 
     plant_instances.at(plantID).max_age = 120;  // this is when height equals 1.8 m 
+
+    return plantID;
+
+}
+
+void PlantArchitecture::initializeSennaAlexandrina_Shoots() {
+
+     // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/AlmondLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.35f;
+    leaf_prototype.midrib_fold_fraction = 0.0f;
+    leaf_prototype.longitudinal_curvature=0.0f;
+    leaf_prototype.lateral_curvature = 0.0f;
+    //leaf_prototype.wave_period = 0.35f;
+    //leaf_prototype.wave_amplitude = 0.08f;
+    leaf_prototype.subdivisions = 2;  //reduced from 7 for optimization of primitives
+    leaf_prototype.unique_prototypes = 4; //reduced from 5 for opt.
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 10;
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(140, 220);
+    phytomer_parameters.internode.radius_initial = 0.001;
+    phytomer_parameters.internode.color = make_RGBcolor(0.2556, 0.3240, 0.0672);
+    phytomer_parameters.internode.length_segments = 1;
+    phytomer_parameters.internode.radial_subdivisions = 4;
+
+    phytomer_parameters.petiole.petioles_per_internode = 1;
+    phytomer_parameters.petiole.pitch.uniformDistribution(60,70);
+    phytomer_parameters.petiole.radius = 0.001;
+    phytomer_parameters.petiole.length = 0.125;
+    phytomer_parameters.petiole.taper = 0.25;
+    phytomer_parameters.petiole.curvature.uniformDistribution(-250,0);
+    phytomer_parameters.petiole.color = make_RGBcolor(0.4, 0.46, 0.15);
+    phytomer_parameters.petiole.length_segments = 5;
+
+    phytomer_parameters.leaf.leaves_per_petiole = 15;
+    phytomer_parameters.leaf.pitch.uniformDistribution(-30, 5);
+    phytomer_parameters.leaf.yaw = 10;
+    phytomer_parameters.leaf.roll.uniformDistribution(-20,20);
+    phytomer_parameters.leaf.leaflet_offset = 0.14;
+    phytomer_parameters.leaf.leaflet_scale = 1;
+    phytomer_parameters.leaf.prototype_scale.uniformDistribution(0.05,0.07);
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters.peduncle.length = 0.2;
+    phytomer_parameters.peduncle.radius = 0.0015;
+    phytomer_parameters.peduncle.pitch = 20;
+    phytomer_parameters.peduncle.roll = 0;
+    phytomer_parameters.peduncle.curvature = -1000;
+    phytomer_parameters.peduncle.color = phytomer_parameters.internode.color;
+    phytomer_parameters.peduncle.length_segments = 5;
+    phytomer_parameters.peduncle.radial_subdivisions = 8;
+
+    phytomer_parameters.inflorescence.flowers_per_peduncle = 4;
+    phytomer_parameters.inflorescence.flower_offset = 0.15;
+    phytomer_parameters.inflorescence.pitch = 80;
+    phytomer_parameters.inflorescence.roll.uniformDistribution(-10,10);
+    phytomer_parameters.inflorescence.flower_prototype_scale = 0.03;
+    phytomer_parameters.inflorescence.flower_prototype_function = TomatoFlowerPrototype;
+    phytomer_parameters.inflorescence.fruit_prototype_scale = 0.07;
+    phytomer_parameters.inflorescence.fruit_prototype_function = TomatoFruitPrototype;
+    phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.2;
+
+    // ---- Shoot Parameters ---- //
+    ShootParameters ms_shoot_parameters(context_ptr->getRandomGenerator());
+    ms_shoot_parameters.phytomer_parameters = phytomer_parameters;
+    ms_shoot_parameters.phytomer_parameters.phytomer_creation_function = Senna_Alexandrina_PhytomerCreationFunction;
+    //ms_shoot_parameters.phytomer_parameters.phytomer_callback_function = CherryTomatoPhytomerCallbackFunction;
+
+    ms_shoot_parameters.max_nodes = 20;
+    ms_shoot_parameters.insertion_angle_tip = 30;
+    ms_shoot_parameters.insertion_angle_decay_rate = 0;
+    ms_shoot_parameters.internode_length_max = 0.045;
+    ms_shoot_parameters.internode_length_min = 0.0;
+    ms_shoot_parameters.internode_length_decay_rate = 0;
+    ms_shoot_parameters.base_roll = 90;
+    ms_shoot_parameters.base_yaw.uniformDistribution(-20,20);
+    ms_shoot_parameters.gravitropic_curvature = 800;
+    ms_shoot_parameters.tortuosity = 1.5;
+    ms_shoot_parameters.phyllochron_min = 20;
+    ms_shoot_parameters.elongation_rate_max = 0.2;
+    ms_shoot_parameters.girth_area_factor = 1.f; //was earlier 2.f
+    ms_shoot_parameters.vegetative_bud_break_time = 1;  //this is controlling budding, hence artificially increased
+    ms_shoot_parameters.vegetative_bud_break_probability_min = 0.05;
+    //ms_shoot_parameters.vegetative_bud_break_probability_decay_rate = 0.0;
+    ms_shoot_parameters.flower_bud_break_probability = 0.01;
+    ms_shoot_parameters.fruit_set_probability = 0.01;
+    ms_shoot_parameters.flowers_require_dormancy = false;
+    ms_shoot_parameters.growth_requires_dormancy = false;
+    ms_shoot_parameters.determinate_shoot_growth = false;
+
+    ////////////////////// SECONDARY SHOOT DEFINITION BY NP
+    ShootParameters sec_shoot_parameters(context_ptr->getRandomGenerator());
+    sec_shoot_parameters.phytomer_parameters = phytomer_parameters;
+    //sec_shoot_parameters.phytomer_parameters.phytomer_creation_function = CherryTomatoPhytomerCreationFunction;
+    //sec_shoot_parameters.phytomer_parameters.phytomer_callback_function = CherryTomatoPhytomerCallbackFunction;
+
+    sec_shoot_parameters.max_nodes = 3;
+    sec_shoot_parameters.insertion_angle_tip = 30;
+    sec_shoot_parameters.insertion_angle_decay_rate = 0;
+    sec_shoot_parameters.internode_length_max = 0.045;
+    sec_shoot_parameters.internode_length_min = 0.0;
+    sec_shoot_parameters.internode_length_decay_rate = 0;
+    sec_shoot_parameters.base_roll = 90;
+    sec_shoot_parameters.base_yaw.uniformDistribution(-20,20);
+    sec_shoot_parameters.gravitropic_curvature = 800;
+    sec_shoot_parameters.tortuosity = 1.15;
+    sec_shoot_parameters.phyllochron_min = 20;
+    sec_shoot_parameters.elongation_rate_max = 0.1;
+    sec_shoot_parameters.girth_area_factor = 0.5f; //was earlier 2.f
+    sec_shoot_parameters.vegetative_bud_break_time = 10;
+    sec_shoot_parameters.vegetative_bud_break_probability_min = 0.0;
+    sec_shoot_parameters.vegetative_bud_break_probability_decay_rate = 0.0;
+    sec_shoot_parameters.flower_bud_break_probability = 0.01;
+    sec_shoot_parameters.fruit_set_probability = 0.01;
+    sec_shoot_parameters.flowers_require_dormancy = false;
+    sec_shoot_parameters.growth_requires_dormancy = false;
+    sec_shoot_parameters.determinate_shoot_growth = true;
+
+    /////////////////////////////
+
+    defineShootType("mainstem",ms_shoot_parameters);
+    defineShootType("secstem",sec_shoot_parameters);
+    ms_shoot_parameters.defineChildShootTypes({"secstem"},{1.0});
+
+}
+
+uint PlantArchitecture::buildSennaAlexandrina_Plant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        //automatically initialize  shoots
+        initializeSennaAlexandrina_Shoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+
+    uint uID_stem = addBaseStemShoot(plantID, 1, base_rotation, 0.001, 0.045, 0.01, 0.01, 0, "mainstem");
+    //addBaseStemShoot()
+    //problemhere
+
+    breakPlantDormancy(plantID);
+    setPlantPhenologicalThresholds(plantID, 0, 84, 10, 14, 38, 1000, false);  //the leaf senescence does not seem to beworking
+
+    plant_instances.at(plantID).max_age = 365;  // this is when height equals 0.75 m 
 
     return plantID;
 

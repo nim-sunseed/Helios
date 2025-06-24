@@ -867,6 +867,13 @@ uint StrawberryFruitPrototype( helios::Context* context_ptr, uint subdivisions )
     return objID;
 }
 
+void Senna_Alexandrina_PhytomerCreationFunction(std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age){
+        //set leaf scale based on position along the shoot
+    float leaf_scale = fmin(1.f, 0.5 + 0.5 * plant_age / 60.f);
+    //std::cout<<leaf_scale<<" "<< phytomer->age <<" "<< plant_age <<std::endl;
+    phytomer->scaleLeafPrototypeScale(leaf_scale);
+}
+
 uint TomatoFruitPrototype( helios::Context* context_ptr, uint subdivisions ){
     std::vector<uint> UUIDs = context_ptr->loadOBJ( "plugins/plantarchitecture/assets/obj/TomatoFruit.obj", make_vec3(0.,0,0), 0.75,nullrotation, RGB::black, "ZUP", true );
     uint objID = context_ptr->addPolymeshObject( UUIDs );

@@ -1751,6 +1751,10 @@ protected:
 
     void initializeStrawberry_annual_Shoots();
 
+    uint buildSennaAlexandrina_Plant(const helios::vec3 &base_position);
+
+    void initializeSennaAlexandrina_Shoots();
+
     uint buildStrawberry_annual_Plant( const helios::vec3 &base_position );
 
     void initializeSugarbeetShoots();
