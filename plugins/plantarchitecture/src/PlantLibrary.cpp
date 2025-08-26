@@ -41,7 +41,10 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildBindweedPlant(base_position);
     }else if( current_plant_model == "capsicum" ) {
         plantID = buildCapsicumPlant(base_position);
-    }else if( current_plant_model == "bean" ) {
+    }else if( current_plant_model == "capsicum_trellis" ) {
+        plantID = buildCapsicumTrellisPlant(base_position);
+    }
+    else if( current_plant_model == "bean" ) {
         plantID = buildBeanPlant(base_position);
     }else if( current_plant_model == "cheeseweed" ) {
         plantID = buildCheeseweedPlant(base_position);
@@ -150,6 +153,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeBeanShoots();
     }else if( plant_label == "capsicum" ) {
         initializeCapsicumShoots();
+    }else if( plant_label == "capsicum_trellis" ) {
+        initializeCapsicumTrellisShoots();
     }else if( plant_label == "cheeseweed" ) {
         initializeCheeseweedShoots();
     }else if( plant_label == "cowpea" ) {
@@ -961,7 +966,7 @@ void PlantArchitecture::initializeCapsicumShoots() {
     shoot_parameters.phytomer_parameters = phytomer_parameters;
     shoot_parameters.phytomer_parameters.phytomer_creation_function = CapsicumPhytomerCreationFunction;
 
-    shoot_parameters.max_nodes = 30;
+    shoot_parameters.max_nodes = 90; //was 30 earlier
     shoot_parameters.insertion_angle_tip = 30;  //CHANGED FROM 30
     shoot_parameters.insertion_angle_decay_rate = 0;
     shoot_parameters.internode_length_max = 0.045;
@@ -990,7 +995,7 @@ void PlantArchitecture::initializeCapsicumShoots() {
 
     ShootParameters shoot_parameters_secondary = shoot_parameters;
     shoot_parameters_secondary.phytomer_parameters = phytomer_parameters_secondary;
-    shoot_parameters_secondary.max_nodes = 7;
+    shoot_parameters_secondary.max_nodes = 2;
     shoot_parameters_secondary.phyllochron_min = 8;
     shoot_parameters_secondary.vegetative_bud_break_probability_min = 0.2;
 
@@ -1020,6 +1025,136 @@ uint PlantArchitecture::buildCapsicumPlant(const helios::vec3 &base_position) {
 
 }
 
+void PlantArchitecture::initializeCapsicumTrellisShoots() {
+    // references - https://agricultureguruji.com/capsicum-cultivation-in-polyhouse/
+    // assumed that this hits max trellis height of 3.5 m in 5 months
+    // flowering and fruiting happens from 5 months to 8 months.
+
+
+    // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/CapsicumLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.45f;
+    leaf_prototype.midrib_fold_fraction = 0.1f;
+    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.25, -0.15f);
+    leaf_prototype.lateral_curvature = -0.15f;
+    leaf_prototype.wave_period = 0.35f;
+    leaf_prototype.wave_amplitude = 0.0f;
+    leaf_prototype.subdivisions = 5;
+    leaf_prototype.unique_prototypes = 5;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 5;
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(137.5-10, 137.5+10);
+    phytomer_parameters.internode.radius_initial = 0.001;
+    phytomer_parameters.internode.color = make_RGBcolor(0.213, 0.270, 0.056);
+    phytomer_parameters.internode.length_segments = 1;
+
+    phytomer_parameters.petiole.petioles_per_internode = 1;
+    phytomer_parameters.petiole.pitch.uniformDistribution(-75, -50);
+    phytomer_parameters.petiole.radius = 0.0001;
+    phytomer_parameters.petiole.length = 0.0001;
+    phytomer_parameters.petiole.taper = 1;
+    phytomer_parameters.petiole.curvature = 1000;
+    phytomer_parameters.petiole.color = phytomer_parameters.internode.color;
+    phytomer_parameters.petiole.length_segments = 1;
+
+    phytomer_parameters.leaf.leaves_per_petiole = 1;
+    phytomer_parameters.leaf.pitch = 0;
+    phytomer_parameters.leaf.yaw = 10;
+    phytomer_parameters.leaf.roll = 0;
+    phytomer_parameters.leaf.prototype_scale.uniformDistribution(0.15,0.275);
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters.peduncle.length = 0.01;
+    phytomer_parameters.peduncle.radius = 0.001;
+    phytomer_parameters.peduncle.pitch.uniformDistribution(10,30);
+    phytomer_parameters.peduncle.roll = 0;
+    phytomer_parameters.peduncle.curvature = -700;
+    phytomer_parameters.peduncle.color = phytomer_parameters.internode.color;
+    phytomer_parameters.peduncle.length_segments = 3;
+    phytomer_parameters.peduncle.radial_subdivisions = 6;
+
+    phytomer_parameters.inflorescence.flowers_per_peduncle = 1;
+    phytomer_parameters.inflorescence.pitch = 20;
+    phytomer_parameters.inflorescence.roll.uniformDistribution(-30,30);
+    phytomer_parameters.inflorescence.flower_prototype_scale = 0.005;
+    phytomer_parameters.inflorescence.flower_prototype_function = AlmondFlowerPrototype; //proxy flowers
+    phytomer_parameters.inflorescence.fruit_prototype_scale.uniformDistribution(0.04,0.10);
+    phytomer_parameters.inflorescence.fruit_prototype_function = AlmondFruitPrototype;  //proxy fruits as capsicumproto function throws an error couldnt find file
+    phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.9;
+    phytomer_parameters.inflorescence.unique_prototypes = 10;
+
+    PhytomerParameters phytomer_parameters_secondary = phytomer_parameters;
+
+    // ---- Shoot Parameters ---- //
+
+    ShootParameters shoot_parameters(context_ptr->getRandomGenerator());
+    shoot_parameters.phytomer_parameters = phytomer_parameters;
+    shoot_parameters.phytomer_parameters.phytomer_creation_function = CapsicumTrellisPhytomerCreationFunction;
+
+    shoot_parameters.max_nodes = 300;  //increased from 12.
+    shoot_parameters.insertion_angle_tip = 30;  
+    shoot_parameters.insertion_angle_decay_rate = 0;
+    shoot_parameters.internode_length_max = 0.045;
+    shoot_parameters.internode_length_min = 0.0;
+    shoot_parameters.internode_length_decay_rate = 0;
+    shoot_parameters.base_roll = 90;
+    shoot_parameters.base_yaw.uniformDistribution(-20,20);
+    shoot_parameters.gravitropic_curvature = 1100;  //CHANGED TO MORE UPRIGHT CURVING GROWTH
+    shoot_parameters.tortuosity = 2;
+
+    shoot_parameters.phyllochron_min = 1.5;   //SLOWED DOWN FROM 3
+    shoot_parameters.elongation_rate_max = 0.1;
+    shoot_parameters.girth_area_factor = 2.f;
+    shoot_parameters.vegetative_bud_break_time = 10;  //ideally this should only delay the growth
+    shoot_parameters.vegetative_bud_break_probability_min = 0.15;
+    //shoot_parameters.vegetative_bud_break_probability_decay_rate = 0;
+    shoot_parameters.flower_bud_break_probability = 0.5;
+    shoot_parameters.fruit_set_probability = 0.5;
+    shoot_parameters.flowers_require_dormancy = false;
+    shoot_parameters.growth_requires_dormancy = false;
+    shoot_parameters.determinate_shoot_growth = true;
+
+    shoot_parameters.defineChildShootTypes({"secondary"},{1.0});
+
+    defineShootType("mainstem",shoot_parameters);
+
+    ShootParameters shoot_parameters_secondary = shoot_parameters;
+    shoot_parameters_secondary.phytomer_parameters = phytomer_parameters_secondary;
+    shoot_parameters_secondary.max_nodes = 7;
+    shoot_parameters_secondary.phyllochron_min = 8;
+    shoot_parameters_secondary.vegetative_bud_break_probability_min = 0.01;
+
+    defineShootType( "secondary", shoot_parameters_secondary);
+
+}
+
+uint PlantArchitecture::buildCapsicumTrellisPlant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        //automatically initialize capsicum plant shoots
+        initializeCapsicumTrellisShoots(); //CHANGE THIS IN EVERY NEW PLANTARCH ADDITION
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+    uint uID_stem = addBaseStemShoot(plantID, 1, base_rotation, 0.002, shoot_types.at("mainstem").internode_length_max.val(), 0.01, 0.01, 0, "mainstem");
+
+    breakPlantDormancy(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 0, 120, 20, 10, 14, 1000, false);
+
+    plant_instances.at(plantID).max_age = 175;
+
+    return plantID;
+
+}
 
 void PlantArchitecture::initializeCheeseweedShoots() {
 
@@ -3143,8 +3278,8 @@ void PlantArchitecture::initializeCherryTomatoShoots() {
     ms_shoot_parameters.elongation_rate_max = 0.2;
     ms_shoot_parameters.girth_area_factor = 1.f; //was earlier 2.f
     ms_shoot_parameters.vegetative_bud_break_time = 40;
-    ms_shoot_parameters.vegetative_bud_break_probability_min = 0.1;
-    ms_shoot_parameters.vegetative_bud_break_probability_decay_rate = 0.0;
+    ms_shoot_parameters.vegetative_bud_break_probability_min = 0.25;
+    ms_shoot_parameters.vegetative_bud_break_probability_decay_rate = 0.01; //workaround,to maintain this, for budbreakprob to apply.
     ms_shoot_parameters.flower_bud_break_probability = 0.3;
     ms_shoot_parameters.fruit_set_probability = 0.1;
     ms_shoot_parameters.flowers_require_dormancy = false;
@@ -3201,7 +3336,7 @@ uint PlantArchitecture::buildCherryTomatoPlant(const helios::vec3 &base_position
 
     breakPlantDormancy(plantID);
 
-    setPlantPhenologicalThresholds(plantID, 0, 84, 10, 14, 38, 1000, false);
+    setPlantPhenologicalThresholds(plantID, 0, 84, 10, 14, 38, 10000, false);
 
     plant_instances.at(plantID).max_age = 120;  // this is when height equals 1.8 m 
 

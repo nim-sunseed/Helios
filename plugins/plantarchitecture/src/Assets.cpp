@@ -341,6 +341,43 @@ void CapsicumPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint 
 
 }
 
+uint CapsicumTrellisFruitPrototype( helios::Context* context_ptr, uint subdivisions ){
+    std::string OBJ_file;
+    if ( context_ptr->randn()<0.4 ) {
+        OBJ_file = "plugins/plantarchitecture/assets/obj/CapsicumFruit_green.obj";
+    }else {
+        OBJ_file = "plugins/plantarchitecture/assets/obj/CapsicumFruit_red.obj";
+    }
+
+    std::vector<uint> UUIDs = context_ptr->loadOBJ( OBJ_file.c_str(), make_vec3(0.,0,0), 0, nullrotation, RGB::black, "ZUP", true );
+    return context_ptr->addPolymeshObject( UUIDs );
+}
+
+void CapsicumTrellisPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age ){
+
+    if( shoot_node_index<2 && phytomer->rank==0 ){  //SHOOT NODE EARLIER WAS 6 - MADE 2
+        phytomer->setVegetativeBudState(BUD_DEAD);
+        phytomer->setFloralBudState(BUD_DEAD);
+        //phytomer->removeLeaf();  THIS WAS THROWING AN ERROR - AFTER COPUING FROM 1.3.34 TO CLEAR FROM BAILEY. 
+    }
+
+    if( phytomer->rank>=2 ){
+        phytomer->setVegetativeBudState(BUD_DEAD);
+        phytomer->setFloralBudState(BUD_DEAD);
+    }
+
+    //set leaf and internode scale based on position along the shoot
+    float leaf_scale = std::min(1.f, 0.6f + 0.4f * shoot_node_index / 5.f);
+    phytomer->scaleLeafPrototypeScale(leaf_scale);
+
+    //set internode length based on position along the shoot
+    if ( phytomer->rank == 0 ) {
+        float inode_scale = std::min(1.f, 0.05f + 0.95f * plant_age / 15.f);
+        phytomer->scaleInternodeMaxLength(inode_scale);
+    }
+
+}
+
 
 uint BindweedFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open ){
     std::vector<uint> UUIDs = context_ptr->loadOBJ( "plugins/plantarchitecture/assets/obj/BindweedFlower.obj", true );

@@ -23,16 +23,18 @@ int main(){
    /// plant architecture plugin here
 
    PlantArchitecture plantarchitecture(&context); 
-   plantarchitecture.loadPlantModelFromLibrary("senna_alexandrina");
+   //plantarchitecture.optionalOutputObjectData("rank");
+   plantarchitecture.loadPlantModelFromLibrary("capsicum_trellis");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(60);
+   plantarchitecture.advanceTime(175);
     float height = plantarchitecture.getPlantHeight(plantID);
 	//
    std::cout<< height<< std::endl;
   ///////////////////////
 
 	Visualizer vis_nir(500);
+	//vis_nir.colorContextPrimitivesByObjectData("rank");
 	vis_nir.buildContextGeometry(&context);
     vis_nir.plotInteractive(); //open an interactive graphics window 
 	std::cout<<"DONE"<<std::endl; 
