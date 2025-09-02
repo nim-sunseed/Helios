@@ -1115,7 +1115,7 @@ void PlantArchitecture::initializeCapsicumTrellisShoots() {
     shoot_parameters.vegetative_bud_break_probability_min = 0.15;
     //shoot_parameters.vegetative_bud_break_probability_decay_rate = 0;
     shoot_parameters.flower_bud_break_probability = 0.5;
-    shoot_parameters.fruit_set_probability = 0.5;
+    shoot_parameters.fruit_set_probability = 0.15;
     shoot_parameters.flowers_require_dormancy = false;
     shoot_parameters.growth_requires_dormancy = false;
     shoot_parameters.determinate_shoot_growth = true;
