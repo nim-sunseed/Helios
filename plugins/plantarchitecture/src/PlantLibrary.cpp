@@ -39,6 +39,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildAsparagusPlant(base_position);
     }else if( current_plant_model == "bindweed" ) {
         plantID = buildBindweedPlant(base_position);
+    }else if( current_plant_model == "blueberry" ) {
+        plantID = buildBlueberryBush(base_position);
     }else if( current_plant_model == "capsicum" ) {
         plantID = buildCapsicumPlant(base_position);
     }else if( current_plant_model == "capsicum_trellis" ) {
@@ -156,6 +158,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeBeanShoots();
     }else if( plant_label == "basil" ) {
         initializeBasilShoots();
+    }else if( plant_label == "blueberry" ) {
+        initializeBlueberryShoots();
     }else if( plant_label == "capsicum" ) {
         initializeCapsicumShoots();
     }else if( plant_label == "capsicum_trellis" ) {
@@ -1024,6 +1028,107 @@ uint PlantArchitecture::buildBeanPlant(const helios::vec3 &base_position) {
     return plantID;
 
 }
+
+void PlantArchitecture::initializeBlueberryShoots() {
+    // ---- Leaf Prototype ----
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/BlueberryLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.60f;
+    leaf_prototype.midrib_fold_fraction = 0.3f;
+    leaf_prototype.longitudinal_curvature = -0.2f;
+    leaf_prototype.lateral_curvature = 0.1f;
+    leaf_prototype.subdivisions = 2;
+    leaf_prototype.unique_prototypes = 1;
+
+    // ---- Phytomer Parameters ----
+    PhytomerParameters phytomer_parameters_blueberry(context_ptr->getRandomGenerator());
+
+    phytomer_parameters_blueberry.internode.image_texture = "plugins/plantarchitecture/assets/textures/AppleBark.jpg";
+    phytomer_parameters_blueberry.internode.pitch = 2;
+    phytomer_parameters_blueberry.internode.phyllotactic_angle.uniformDistribution( 120, 140 );
+    phytomer_parameters_blueberry.internode.radius_initial = 0.0015;
+    phytomer_parameters_blueberry.internode.length_segments = 1;
+
+    phytomer_parameters_blueberry.petiole.petioles_per_internode = 1;
+    phytomer_parameters_blueberry.petiole.pitch.uniformDistribution(-50, -30);
+    phytomer_parameters_blueberry.petiole.taper = 0.12;
+    phytomer_parameters_blueberry.petiole.length = 0.0005;
+    phytomer_parameters_blueberry.petiole.radius = 0.0004;
+    phytomer_parameters_blueberry.petiole.length_segments = 1;
+    phytomer_parameters_blueberry.petiole.radial_subdivisions = 3;
+    phytomer_parameters_blueberry.petiole.color = make_RGBcolor(0.5,0.4,0.2);
+
+    // leaf
+    phytomer_parameters_blueberry.leaf.leaves_per_petiole = 1;
+    phytomer_parameters_blueberry.leaf.prototype_scale = 0.05;
+    phytomer_parameters_blueberry.leaf.prototype = leaf_prototype;
+
+    // small axillary inflorescences (blueberries have clusters, but keep simple)
+    phytomer_parameters_blueberry.inflorescence.flowers_per_peduncle = 5;
+    phytomer_parameters_blueberry.inflorescence.pitch = 20;
+    phytomer_parameters_blueberry.inflorescence.roll = 45;
+    phytomer_parameters_blueberry.inflorescence.flower_prototype_scale = 0.01;
+
+    // ---- Shoot Parameters ----
+
+    // main cane (woody shoots)
+    ShootParameters shoot_parameters_cane(context_ptr->getRandomGenerator());
+    shoot_parameters_cane.phytomer_parameters = phytomer_parameters_blueberry;
+    shoot_parameters_cane.max_nodes = 20;
+    shoot_parameters_cane.max_nodes_per_season = 20;
+    shoot_parameters_cane.phyllochron_min = 10;
+    shoot_parameters_cane.elongation_rate_max = 0.08;
+    shoot_parameters_cane.girth_area_factor = 12.f;
+    shoot_parameters_cane.vegetative_bud_break_probability_min = 0.7;
+    shoot_parameters_cane.vegetative_bud_break_probability_decay_rate = 0.f;
+    shoot_parameters_cane.insertion_angle_tip.uniformDistribution(20, 80);
+    shoot_parameters_cane.internode_length_max = 0.0008;
+    shoot_parameters_cane.internode_length_min = 0.0004;
+    shoot_parameters_cane.internode_length_decay_rate = 0;
+
+    shoot_parameters_cane.defineChildShootTypes({"blueberry_proleptic"}, {1.f});
+
+    // Lateral shoots: shorter, more densely leafed
+    ShootParameters shoot_parameters_proleptic = shoot_parameters_cane;
+    shoot_parameters_proleptic.max_nodes = 6;
+    shoot_parameters_proleptic.max_nodes_per_season = 10;
+    shoot_parameters_proleptic.elongation_rate_max = 0.1;
+    shoot_parameters_proleptic.girth_area_factor = 10.f;
+    shoot_parameters_proleptic.vegetative_bud_break_probability_min = 0.2;
+    shoot_parameters_proleptic.vegetative_bud_break_probability_decay_rate = -0.8;
+    shoot_parameters_proleptic.internode_length_max = 0.03;
+    shoot_parameters_proleptic.internode_length_min = 0.0025;
+    shoot_parameters_proleptic.gravitropic_curvature = 900;
+    shoot_parameters_proleptic.tortuosity = 1;
+    shoot_parameters_proleptic.insertion_angle_tip.uniformDistribution(20, 40);
+    shoot_parameters_proleptic.defineChildShootTypes({"blueberry_proleptic"}, {1.0});
+
+    defineShootType("blueberry_cane", shoot_parameters_cane);
+    defineShootType("blueberry_proleptic", shoot_parameters_proleptic);
+}
+
+uint PlantArchitecture::buildBlueberryBush(const helios::vec3 &base_position) {
+    // Initialize blueberry shoots
+    if (shoot_types.empty()) {
+        initializeBlueberryShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+    uint uID_stem = addBaseStemShoot(plantID, 1, base_rotation, 0.002, shoot_types.at("blueberry_cane").internode_length_max.val(), 0.01, 0.01, 0, "blueberry_cane");
+
+
+    // break dormancy so the bush is active from time zero
+    breakPlantDormancy(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 0, -1, -1, 75, 14, 1000, false);
+    plant_instances.at(plantID).max_age = 180;
+
+    return plantID;
+}
+
 
 void PlantArchitecture::initializeCapsicumShoots() {
     // references - https://agricultureguruji.com/capsicum-cultivation-in-polyhouse/

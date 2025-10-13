@@ -24,10 +24,10 @@ int main(){
 
    PlantArchitecture plantarchitecture(&context); 
    //plantarchitecture.optionalOutputObjectData("rank");
-   plantarchitecture.loadPlantModelFromLibrary("butterlettuce");
+   plantarchitecture.loadPlantModelFromLibrary("blueberry");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(90);
+   plantarchitecture.advanceTime(365);
 
     float height = plantarchitecture.getPlantHeight(plantID);
 	std::vector prim_leafs = plantarchitecture.getAllLeafUUIDs();

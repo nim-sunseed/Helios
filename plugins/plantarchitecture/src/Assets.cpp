@@ -341,6 +341,18 @@ void BeanPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoo
 
 }
 
+void BlueberryPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age ) {
+
+    if( phytomer->internode_length_max < 0.01 ){ //spurs
+        phytomer->setInternodeMaxRadius( 0.005 );
+        phytomer->setVegetativeBudState( BUD_DEAD );
+        phytomer->scaleLeafPrototypeScale( 0.8 );
+        phytomer->setFloralBudState( BUD_DEAD );
+        phytomer->parent_shoot_ptr->shoot_parameters.max_nodes_per_season = 6;
+    }
+
+}
+
 uint CapsicumFruitPrototype( helios::Context* context_ptr, uint subdivisions ){
     std::string OBJ_file;
     if ( context_ptr->randn()<0.4 ) {
