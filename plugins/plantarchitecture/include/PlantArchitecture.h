@@ -1744,6 +1744,10 @@ protected:
     void initializeButterLettuceShoots();
 
     uint buildButterLettucePlant(const helios::vec3 &base_position );
+    
+    void initializeRomaineLettuceShoots();
+
+    uint buildRomaineLettucePlant(const helios::vec3 &base_position );
 
     void initializeSoybeanShoots();
 

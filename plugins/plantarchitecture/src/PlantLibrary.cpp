@@ -69,6 +69,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildRicePlant(base_position);
     }else if( current_plant_model == "butterlettuce" ) {
         plantID = buildButterLettucePlant(base_position);
+    }else if( current_plant_model == "romainelettuce" ) {
+        plantID = buildRomaineLettucePlant(base_position);
     }else if( current_plant_model == "sorghum" ) {
         plantID = buildSorghumPlant(base_position);
     }else if( current_plant_model == "soybean" ) {
@@ -180,6 +182,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeRiceShoots();
     }else if( plant_label == "butterlettuce" ) {
         initializeButterLettuceShoots();
+    }else if( plant_label == "romainelettuce" ) {
+        initializeRomaineLettuceShoots();
     }else if( plant_label == "sorghum" ) {
         initializeSorghumShoots();
     }else if( plant_label == "soybean" ) {
@@ -2552,6 +2556,85 @@ uint PlantArchitecture::buildRicePlant(const helios::vec3 &base_position) {
     return plantID;
 
 }
+void PlantArchitecture::initializeRomaineLettuceShoots() {
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/RomaineLettuceLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.9f;
+    leaf_prototype.midrib_fold_fraction = 0.225f;
+    leaf_prototype.longitudinal_curvature.uniformDistribution(.05, 0.25);
+    leaf_prototype.lateral_curvature = -0.5f;
+    leaf_prototype.wave_period.uniformDistribution(0.1, 0.25);
+    leaf_prototype.wave_amplitude.uniformDistribution(0.05, 0.1);
+    leaf_prototype.subdivisions = 5;
+    leaf_prototype.unique_prototypes = 5;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 0;
+    phytomer_parameters.internode.phyllotactic_angle = 140;
+    phytomer_parameters.internode.radius_initial = 0.02;
+    phytomer_parameters.internode.color = make_RGBcolor(0.402, 0.423, 0.413);
+    phytomer_parameters.internode.length_segments = 1;
+    phytomer_parameters.internode.radial_subdivisions = 10;
+
+    phytomer_parameters.petiole.petioles_per_internode = 1;
+    phytomer_parameters.petiole.pitch.uniformDistribution(0, 30);
+    phytomer_parameters.petiole.radius = 0.001;
+    phytomer_parameters.petiole.length = 0.001;
+    phytomer_parameters.petiole.length_segments = 1;
+    phytomer_parameters.petiole.radial_subdivisions = 3;
+    phytomer_parameters.petiole.color = RGB::red;
+
+    phytomer_parameters.leaf.leaves_per_petiole = 1;
+    phytomer_parameters.leaf.pitch = 40;
+    phytomer_parameters.leaf.yaw = 0;
+    phytomer_parameters.leaf.roll = 0;
+    phytomer_parameters.leaf.prototype_scale.uniformDistribution(0.15, 0.25);
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+
+    // ---- Shoot Parameters ---- //
+
+    ShootParameters shoot_parameters_mainstem(context_ptr->getRandomGenerator());
+    shoot_parameters_mainstem.phytomer_parameters = phytomer_parameters;
+    shoot_parameters_mainstem.vegetative_bud_break_probability_min = 0;
+    shoot_parameters_mainstem.phyllochron_min = 2.5;
+    shoot_parameters_mainstem.elongation_rate_max = 0.1;
+    shoot_parameters_mainstem.girth_area_factor = 0.f;
+    shoot_parameters_mainstem.gravitropic_curvature = 10;
+    shoot_parameters_mainstem.internode_length_max = 0.001;
+    shoot_parameters_mainstem.internode_length_decay_rate = 0;
+    shoot_parameters_mainstem.flowers_require_dormancy = false;
+    shoot_parameters_mainstem.growth_requires_dormancy = false;
+    shoot_parameters_mainstem.flower_bud_break_probability = 0.0;
+    shoot_parameters_mainstem.max_nodes = 20;
+
+    defineShootType("mainstem", shoot_parameters_mainstem);
+}
+
+uint PlantArchitecture::buildRomaineLettucePlant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        // automatically initialize lettuce plant shoots
+        initializeRomaineLettuceShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    uint uID_stem = addBaseStemShoot(plantID, 3, make_AxisRotation(context_ptr->randu(0.f, 0.03f * M_PI), 0.f, context_ptr->randu(0.f, 2.f * M_PI)), 0.005, 0.001, 1, 1, 0, "mainstem");
+
+    breakPlantDormancy(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 0, -1, -1, -1, -1, 1000, false);
+
+    plant_instances.at(plantID).max_age = 90;
+
+    return plantID;
+}
+
 
 void PlantArchitecture::initializeButterLettuceShoots() {
 
@@ -2563,8 +2646,8 @@ void PlantArchitecture::initializeButterLettuceShoots() {
     leaf_prototype.lateral_curvature = -0.4f;
     leaf_prototype.wave_period.uniformDistribution(0.15, 0.25);
     leaf_prototype.wave_amplitude.uniformDistribution(0.05,0.1);
-    leaf_prototype.subdivisions = 30;
-    leaf_prototype.unique_prototypes = 10;
+    leaf_prototype.subdivisions = 5;
+    leaf_prototype.unique_prototypes = 5;
 
     // ---- Phytomer Parameters ---- //
 
@@ -2630,7 +2713,7 @@ uint PlantArchitecture::buildButterLettucePlant(const helios::vec3 &base_positio
 
     setPlantPhenologicalThresholds(plantID, 0, -1, -1, -1, -1, 1000, false);
 
-    plant_instances.at(plantID).max_age = 365;
+    plant_instances.at(plantID).max_age = 90;
 
     return plantID;
 
