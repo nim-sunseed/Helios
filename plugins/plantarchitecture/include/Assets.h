@@ -18,6 +18,7 @@ void ApplePhytomerCallbackFunction( std::shared_ptr<Phytomer> phytomer );
 
 uint AsparagusLeafPrototype( helios::Context* context_ptr, LeafPrototype* prototype_parameters, int compound_leaf_index );
 void AsparagusPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age );
+void BasilPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age );
 
 uint BeanLeafPrototype_unifoliate_OBJ(helios::Context* context_ptr, LeafPrototype* prototype_parameters, int compound_leaf_index );
 uint BeanLeafPrototype_trifoliate_OBJ(helios::Context* context_ptr, LeafPrototype* prototype_parameters, int compound_leaf_index );

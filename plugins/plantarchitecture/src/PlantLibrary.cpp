@@ -43,9 +43,10 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildCapsicumPlant(base_position);
     }else if( current_plant_model == "capsicum_trellis" ) {
         plantID = buildCapsicumTrellisPlant(base_position);
-    }
-    else if( current_plant_model == "bean" ) {
+    }else if( current_plant_model == "bean" ) {
         plantID = buildBeanPlant(base_position);
+    }else if( current_plant_model == "basil" ) {
+        plantID = buildBasilPlant(base_position);
     }else if( current_plant_model == "cheeseweed" ) {
         plantID = buildCheeseweedPlant(base_position);
     }else if( current_plant_model == "cowpea" ) {
@@ -151,6 +152,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeBindweedShoots();
     }else if( plant_label == "bean" ) {
         initializeBeanShoots();
+    }else if( plant_label == "basil" ) {
+        initializeBasilShoots();
     }else if( plant_label == "capsicum" ) {
         initializeCapsicumShoots();
     }else if( plant_label == "capsicum_trellis" ) {
@@ -625,6 +628,128 @@ uint PlantArchitecture::buildAsparagusPlant(const helios::vec3 &base_position) {
 
     return plantID;
 
+}
+
+void PlantArchitecture::initializeBasilShoots() {
+
+    // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/BasilLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.45f;
+    leaf_prototype.midrib_fold_fraction = 0.1f;
+    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.15f, -0.05f);
+    leaf_prototype.lateral_curvature = -0.25f;
+    leaf_prototype.wave_period = 0.25f;
+    leaf_prototype.wave_amplitude = 0.0f;
+    leaf_prototype.subdivisions = 4;
+    leaf_prototype.unique_prototypes = 5;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 10;
+    phytomer_parameters.internode.phyllotactic_angle = 90;
+    phytomer_parameters.internode.radius_initial = 0.00125;
+    phytomer_parameters.internode.color = make_RGBcolor(0.220, 0.280, 0.056);
+    phytomer_parameters.internode.length_segments = 1;
+
+    phytomer_parameters.petiole.petioles_per_internode = 2;
+    phytomer_parameters.petiole.pitch.uniformDistribution(-60, -45);
+    phytomer_parameters.petiole.radius = 0.0001;
+    phytomer_parameters.petiole.length = 0.0001;
+    phytomer_parameters.petiole.taper = 1;
+    phytomer_parameters.petiole.curvature = 0;
+    phytomer_parameters.petiole.color = phytomer_parameters.internode.color;
+    phytomer_parameters.petiole.length_segments = 1;
+
+    phytomer_parameters.leaf.leaves_per_petiole = 1;
+    phytomer_parameters.leaf.pitch = 0;
+    phytomer_parameters.leaf.yaw = 15;
+    phytomer_parameters.leaf.roll = 10;
+    phytomer_parameters.leaf.prototype_scale.uniformDistribution(0.10, 0.15);
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters.peduncle.length = 0.01;
+    phytomer_parameters.peduncle.radius = 0.001;
+    phytomer_parameters.peduncle.pitch.uniformDistribution(10, 35);
+    phytomer_parameters.peduncle.roll = 0;
+    phytomer_parameters.peduncle.curvature = -600;
+    phytomer_parameters.peduncle.color = phytomer_parameters.internode.color;
+    phytomer_parameters.peduncle.length_segments = 3;
+    phytomer_parameters.peduncle.radial_subdivisions = 6;
+
+    phytomer_parameters.inflorescence.flowers_per_peduncle = 5;
+    phytomer_parameters.inflorescence.pitch = 30;
+    phytomer_parameters.inflorescence.roll.uniformDistribution(-30, 30);
+    phytomer_parameters.inflorescence.flower_prototype_scale = 0.02f;
+    phytomer_parameters.inflorescence.flower_prototype_function = AlmondFlowerPrototype;
+    phytomer_parameters.inflorescence.unique_prototypes = 10;
+
+    PhytomerParameters phytomer_parameters_secondary = phytomer_parameters;
+
+    // ---- Shoot Parameters ---- //
+
+    ShootParameters shoot_parameters(context_ptr->getRandomGenerator());
+    shoot_parameters.phytomer_parameters = phytomer_parameters;
+    shoot_parameters.phytomer_parameters.phytomer_creation_function = BasilPhytomerCreationFunction;
+
+    shoot_parameters.max_nodes = 15;
+    shoot_parameters.insertion_angle_tip = 40;
+    shoot_parameters.insertion_angle_decay_rate = 0;
+    shoot_parameters.internode_length_max = 0.04;
+    shoot_parameters.internode_length_min = 0.005;
+    shoot_parameters.internode_length_decay_rate = 0;
+    shoot_parameters.base_roll = 90;
+    shoot_parameters.base_yaw.uniformDistribution(-20, 20);
+    shoot_parameters.gravitropic_curvature = 600;
+    shoot_parameters.tortuosity = 3;
+
+    shoot_parameters.phyllochron_min = 5;
+    shoot_parameters.elongation_rate_max = 0.15;
+    shoot_parameters.girth_area_factor = 2.f;
+    shoot_parameters.vegetative_bud_break_probability_min = 0.33;
+    shoot_parameters.vegetative_bud_break_probability_decay_rate = -.4;
+    shoot_parameters.flower_bud_break_probability = 0.5;
+    shoot_parameters.fruit_set_probability = 0.;
+    shoot_parameters.flowers_require_dormancy = false;
+    shoot_parameters.growth_requires_dormancy = false;
+    shoot_parameters.determinate_shoot_growth = true;
+
+    shoot_parameters.defineChildShootTypes({"secondary"}, {1.0});
+
+    defineShootType("mainstem", shoot_parameters);
+
+    ShootParameters shoot_parameters_secondary = shoot_parameters;
+    shoot_parameters_secondary.phytomer_parameters = phytomer_parameters_secondary;
+    shoot_parameters_secondary.max_nodes = 5;
+    shoot_parameters_secondary.phyllochron_min = 6;
+    shoot_parameters_secondary.vegetative_bud_break_probability_min = 0.05;
+    shoot_parameters_secondary.vegetative_bud_break_probability_decay_rate = -.4;
+
+    defineShootType("secondary", shoot_parameters_secondary);
+}
+
+uint PlantArchitecture::buildBasilPlant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        // Initialize Basil plant shoots
+        initializeBasilShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+    uint uID_stem = addBaseStemShoot(plantID, 4, base_rotation, 0.002, shoot_types.at("mainstem").internode_length_max.val(), 1, 1, 0, "mainstem");
+
+    breakPlantDormancy(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 0, -1, -1, -1, -1, 1000, false);
+
+    plant_instances.at(plantID).max_age = 240;
+
+    return plantID;
 }
 
 void PlantArchitecture::initializeBindweedShoots() {

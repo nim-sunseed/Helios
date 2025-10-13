@@ -1680,6 +1680,10 @@ protected:
     void initializeAsparagusShoots();
 
     uint buildAsparagusPlant( const helios::vec3 &base_position );
+    
+    void initializeBasilShoots();
+
+    uint buildBasilPlant( const helios::vec3 &base_position );
 
     void initializeBindweedShoots();
 
