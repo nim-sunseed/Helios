@@ -24,13 +24,23 @@ int main(){
 
    PlantArchitecture plantarchitecture(&context); 
    //plantarchitecture.optionalOutputObjectData("rank");
-   plantarchitecture.loadPlantModelFromLibrary("capsicum_trellis");
+   plantarchitecture.loadPlantModelFromLibrary("capsicum");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int plantID = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(245);
+   plantarchitecture.advanceTime(130);
+
     float height = plantarchitecture.getPlantHeight(plantID);
+	std::vector prim_leafs = plantarchitecture.getAllLeafUUIDs();
+	std::vector prim_flowers = plantarchitecture.getAllFlowerUUIDs();
+	std::vector prim_fruits = plantarchitecture.getAllFruitUUIDs();
+	long int no_of_flowers = prim_flowers.size();
+	long int no_of_leafs = prim_leafs.size();
+	long int no_of_fruits = prim_fruits.size();                                                                     
 	//
-   std::cout<< height<< std::endl;
+   std::cout<< "height " << height<< std::endl;
+   std::cout<<"flower primitive number "<<no_of_flowers<< std::endl;
+   std::cout<<"fruits primitive number "<<no_of_fruits<< std::endl;
+   std::cout<<"leaf primitive number "<<no_of_leafs<< std::endl;
   ///////////////////////
 
 	Visualizer vis_nir(500);

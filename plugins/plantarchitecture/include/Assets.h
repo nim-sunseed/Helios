@@ -3,6 +3,8 @@
 #define HELIOS_ASSETS_H
 
 uint GenericLeafPrototype(helios::Context *context_ptr, LeafPrototype* prototype_parameters, int compound_leaf_index);
+uint SphereFruitPrototype( helios::Context* context_ptr, uint subdivisions );
+uint SphereFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open );
 
 uint AlmondFruitPrototype( helios::Context* context_ptr, uint subdivisions );
 uint AlmondFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open=false );

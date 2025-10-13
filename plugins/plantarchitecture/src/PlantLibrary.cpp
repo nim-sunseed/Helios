@@ -951,12 +951,18 @@ void PlantArchitecture::initializeCapsicumShoots() {
     phytomer_parameters.inflorescence.flowers_per_peduncle = 1;
     phytomer_parameters.inflorescence.pitch = 20;
     phytomer_parameters.inflorescence.roll.uniformDistribution(-30,30);
+
+
+   //stick this portion of code for spherical fruits and flwers
     phytomer_parameters.inflorescence.flower_prototype_scale = 0.005;
-    phytomer_parameters.inflorescence.flower_prototype_function = AlmondFlowerPrototype; //proxy flowers
-    phytomer_parameters.inflorescence.fruit_prototype_scale.uniformDistribution(0.04,0.10);
-    phytomer_parameters.inflorescence.fruit_prototype_function = AlmondFruitPrototype;  //proxy fruits
+    phytomer_parameters.inflorescence.flower_prototype_function = SphereFlowerPrototype; //proxy flowers
+    phytomer_parameters.inflorescence.fruit_prototype_scale.uniformDistribution(0.01,0.05);
+    phytomer_parameters.inflorescence.fruit_prototype_function = SphereFruitPrototype;  //proxy fruits as capsicumproto function throws an error couldnt find file
     phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.9;
     phytomer_parameters.inflorescence.unique_prototypes = 10;
+    ////// till here
+
+
 
     PhytomerParameters phytomer_parameters_secondary = phytomer_parameters;
 
@@ -1017,14 +1023,16 @@ uint PlantArchitecture::buildCapsicumPlant(const helios::vec3 &base_position) {
 
     breakPlantDormancy(plantID);
 
-    setPlantPhenologicalThresholds(plantID, 0, -1, 60, 10, 14, 1000, false);
+    setPlantPhenologicalThresholds(plantID, 0, 120, 20, 10, 14, 1000, false);
 
-    plant_instances.at(plantID).max_age = 110;
+    plant_instances.at(plantID).max_age = 175;
 
     return plantID;
 
 }
 
+
+/////
 void PlantArchitecture::initializeCapsicumTrellisShoots() {
     // references - https://agricultureguruji.com/capsicum-cultivation-in-polyhouse/
     // assumed that this hits max trellis height of 3.5 m in 5 months
@@ -1076,18 +1084,21 @@ void PlantArchitecture::initializeCapsicumTrellisShoots() {
     phytomer_parameters.peduncle.roll = 0;
     phytomer_parameters.peduncle.curvature = -700;
     phytomer_parameters.peduncle.color = phytomer_parameters.internode.color;
-    phytomer_parameters.peduncle.length_segments = 3;
-    phytomer_parameters.peduncle.radial_subdivisions = 6;
+    phytomer_parameters.peduncle.length_segments = 2;  //earlier 3
+    phytomer_parameters.peduncle.radial_subdivisions = 2; //earlier 6
 
     phytomer_parameters.inflorescence.flowers_per_peduncle = 1;
     phytomer_parameters.inflorescence.pitch = 20;
     phytomer_parameters.inflorescence.roll.uniformDistribution(-30,30);
+    
+    //stick this portion of code for spherical fruits and flwers
     phytomer_parameters.inflorescence.flower_prototype_scale = 0.005;
-    phytomer_parameters.inflorescence.flower_prototype_function = AlmondFlowerPrototype; //proxy flowers
-    phytomer_parameters.inflorescence.fruit_prototype_scale.uniformDistribution(0.04,0.10);
-    phytomer_parameters.inflorescence.fruit_prototype_function = AlmondFruitPrototype;  //proxy fruits as capsicumproto function throws an error couldnt find file
+    phytomer_parameters.inflorescence.flower_prototype_function = SphereFlowerPrototype; //proxy flowers
+    phytomer_parameters.inflorescence.fruit_prototype_scale.uniformDistribution(0.01,0.05);
+    phytomer_parameters.inflorescence.fruit_prototype_function = SphereFruitPrototype;  //proxy fruits as capsicumproto function throws an error couldnt find file
     phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.9;
     phytomer_parameters.inflorescence.unique_prototypes = 10;
+    ////// till here
 
     PhytomerParameters phytomer_parameters_secondary = phytomer_parameters;
 
