@@ -3827,36 +3827,36 @@ void PlantArchitecture::initializeTurmericShoots() {
     leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/TurmericLeaf.png";
     leaf_prototype.leaf_aspect_ratio = 0.2;
     leaf_prototype.midrib_fold_fraction = 0.2f;
-    leaf_prototype.longitudinal_curvature = -0.35f;  //wsa init 0.15
-    leaf_prototype.lateral_curvature = 0.4f;
+    leaf_prototype.longitudinal_curvature =-0.35f;  //was init 0.15
+    leaf_prototype.lateral_curvature = 0; //0.4f;
     leaf_prototype.wave_period = 0.3f;
     leaf_prototype.wave_amplitude = 0.01f;
-    leaf_prototype.subdivisions = 6;
-    leaf_prototype.unique_prototypes = 5;
+    leaf_prototype.subdivisions = 16;
+    leaf_prototype.unique_prototypes = 1;
 
     // ---- Phytomer Parameters ---- //
 
     PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
 
-    phytomer_parameters.internode.pitch = 10;
-    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(80,100);
+    phytomer_parameters.internode.pitch = 0; //10;
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(80,120); //80,100
     phytomer_parameters.internode.radius_initial = 0.001;
     phytomer_parameters.internode.color = make_RGBcolor(0.4, 0.6, 0.0);
-    phytomer_parameters.internode.length_segments = 1;
+    phytomer_parameters.internode.length_segments = 6;
 
     phytomer_parameters.petiole.petioles_per_internode = 1;
-    phytomer_parameters.petiole.pitch.uniformDistribution(0,10);
+    phytomer_parameters.petiole.pitch.uniformDistribution(0,15); //0,10
     phytomer_parameters.petiole.radius = 0.0045;
-    phytomer_parameters.petiole.length.uniformDistribution(0.05,0.2);
+    phytomer_parameters.petiole.length.uniformDistribution(0.15,0.2); //0.05,0.2
     phytomer_parameters.petiole.taper = 0.5;
-    phytomer_parameters.petiole.curvature.uniformDistribution(-300,100);
+    phytomer_parameters.petiole.curvature.uniformDistribution(-200,-150); //-300,100
     phytomer_parameters.petiole.color = make_RGBcolor(0.4, 0.6, 0.0);
     phytomer_parameters.petiole.length_segments = 5;
 
     phytomer_parameters.leaf.leaves_per_petiole = 1;
-    phytomer_parameters.leaf.pitch.uniformDistribution(-30,10);
-    phytomer_parameters.leaf.yaw = 20;
-    phytomer_parameters.leaf.roll = -30;
+    phytomer_parameters.leaf.pitch=5;//.uniformDistribution(-30,10);  //-30,10
+    phytomer_parameters.leaf.yaw = 20; //20
+    phytomer_parameters.leaf.roll = 0; //-30
     phytomer_parameters.leaf.leaflet_offset = 0.01;
     phytomer_parameters.leaf.leaflet_scale = 1.0;
     phytomer_parameters.leaf.prototype_scale = 0.4;
@@ -3887,17 +3887,17 @@ void PlantArchitecture::initializeTurmericShoots() {
     shoot_parameters.phytomer_parameters = phytomer_parameters;
 
     shoot_parameters.max_nodes = 15;
-    shoot_parameters.insertion_angle_tip = 40;
+    shoot_parameters.insertion_angle_tip = 0;  //30
     shoot_parameters.insertion_angle_decay_rate = 0;
-    shoot_parameters.internode_length_max = 0.015;
+    shoot_parameters.internode_length_max = 0.15;
     shoot_parameters.internode_length_decay_rate = 0;
-    shoot_parameters.internode_length_min = 0.0;
-    shoot_parameters.base_roll = 90;
-    shoot_parameters.base_yaw.uniformDistribution(-20,20);
-    shoot_parameters.gravitropic_curvature.uniformDistribution(-10,0);
+    shoot_parameters.internode_length_min = 0.05;
+    shoot_parameters.base_roll = 90; //90
+    shoot_parameters.base_yaw.uniformDistribution(-20,20);  //-20,20
+    shoot_parameters.gravitropic_curvature.uniformDistribution(-0.10,0);  //-10,0
     shoot_parameters.tortuosity = 0;
 
-    shoot_parameters.phyllochron_min = 20;
+    shoot_parameters.phyllochron_min = 25;
     shoot_parameters.elongation_rate_max = 0.1;
     shoot_parameters.girth_area_factor = 2.f;
     shoot_parameters.vegetative_bud_break_time = 15;
@@ -3929,8 +3929,7 @@ uint PlantArchitecture::buildTurmericPlant(const helios::vec3 &base_position) {
 
     breakPlantDormancy(plantID);
 
-    //we do not want this plant to flower - hence time to flowering is more than plant age, as a hack
-
+    //we do not want this plant to flower - hence time to flowering is more than plant age
     setPlantPhenologicalThresholds(plantID, 0, 1000, 5, 5, 0, 100000, 100000, true);
 
     plant_instances.at(plantID).max_age = 180;
