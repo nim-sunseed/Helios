@@ -53,7 +53,7 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildCheeseweedPlant(base_position);
     }else if( current_plant_model == "cowpea" ) {
         plantID = buildCowpeaPlant(base_position);
-    }else if( current_plant_model == "grapevine_VSP" ) {
+    }else if( current_plant_model == "grapevine_VSP_IL" ) {
         plantID = buildGrapevineVSP(base_position);
     }else if( current_plant_model == "groundcherryweed" ) {
         plantID = buildGroundCherryWeedPlant(base_position);
@@ -168,7 +168,7 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeCheeseweedShoots();
     }else if( plant_label == "cowpea" ) {
         initializeCowpeaShoots();
-    }else if( plant_label == "grapevine_VSP" ) {
+    }else if( plant_label == "grapevine_VSP_IL" ) {
         initializeGrapevineVSPShoots();
     }else if( plant_label == "groundcherryweed" ) {
         initializeGroundCherryWeedShoots();
@@ -452,7 +452,7 @@ void PlantArchitecture::initializeAppleTreeShoots(){
     shoot_parameters_trunk.phytomer_parameters.internode.phyllotactic_angle = 0;
     shoot_parameters_trunk.phytomer_parameters.internode.radius_initial = 0.01;
     shoot_parameters_trunk.phytomer_parameters.internode.radial_subdivisions = 24;
-    shoot_parameters_trunk.max_nodes = 20;
+    shoot_parameters_trunk.max_nodes = 25;
     shoot_parameters_trunk.girth_area_factor = 5.f;
     shoot_parameters_trunk.vegetative_bud_break_probability_min = 0;
     shoot_parameters_trunk.vegetative_bud_break_time = 0;
@@ -503,7 +503,7 @@ uint PlantArchitecture::buildAppleTree(const helios::vec3 &base_position) {
 
     uint plantID = addPlantInstance(base_position, 0);
 
-    uint uID_trunk = addBaseStemShoot(plantID, 19, make_AxisRotation(context_ptr->randu(0.f, 0.05f * M_PI), context_ptr->randu(0.f, 2.f * M_PI), 0.f * M_PI), 0.015, 0.04, 1.f, 1.f, 0, "trunk");
+    uint uID_trunk = addBaseStemShoot(plantID, 25, make_AxisRotation(context_ptr->randu(0.f, 0.05f * M_PI), context_ptr->randu(0.f, 2.f * M_PI), 0.f * M_PI), 0.025, 0.05, 1.f, 1.f, 0, "trunk");
     appendPhytomerToShoot( plantID, uID_trunk, shoot_types.at("trunk").phytomer_parameters, 0, 0.01, 1, 1);
 
     plant_instances.at(plantID).shoot_tree.at(uID_trunk)->meristem_is_alive = false;
@@ -1644,7 +1644,7 @@ void PlantArchitecture::initializeGrapevineVSPShoots() {
     leaf_prototype.lateral_curvature = 0;
     leaf_prototype.wave_period = 0.3f;
     leaf_prototype.wave_amplitude = 0.1f;
-    leaf_prototype.subdivisions = 5;
+    leaf_prototype.subdivisions = 4;
     leaf_prototype.unique_prototypes = 10;
     leaf_prototype.leaf_offset = make_vec3(-0.3,0,0);
 
@@ -1683,10 +1683,10 @@ void PlantArchitecture::initializeGrapevineVSPShoots() {
     phytomer_parameters_grapevine.inflorescence.flowers_per_peduncle = 1;
     phytomer_parameters_grapevine.inflorescence.pitch = 0;
 //    phytomer_parameters_grapevine.inflorescence.flower_prototype_function = GrapevineFlowerPrototype;
-    phytomer_parameters_grapevine.inflorescence.flower_prototype_scale = 0.04;
-    phytomer_parameters_grapevine.inflorescence.fruit_prototype_function = GrapevineFruitPrototype;
-    phytomer_parameters_grapevine.inflorescence.fruit_prototype_scale = 0.04;
-    phytomer_parameters_grapevine.inflorescence.fruit_gravity_factor_fraction = 0.7;
+    //phytomer_parameters_grapevine.inflorescence.flower_prototype_scale = 0.04;
+    //phytomer_parameters_grapevine.inflorescence.fruit_prototype_function = GrapevineFruitPrototype;
+    //phytomer_parameters_grapevine.inflorescence.fruit_prototype_scale = 0.04;
+    //phytomer_parameters_grapevine.inflorescence.fruit_gravity_factor_fraction = 0.7;
 
     phytomer_parameters_grapevine.phytomer_creation_function = GrapevinePhytomerCreationFunction;
 //    phytomer_parameters_grapevine.phytomer_callback_function = GrapevinePhytomerCallbackFunction;
@@ -1773,9 +1773,9 @@ uint PlantArchitecture::buildGrapevineVSP(const helios::vec3 &base_position) {
     removeShootLeaves( plantID, uID_cane_L );
     removeShootLeaves( plantID, uID_cane_R );
 
-    setPlantPhenologicalThresholds(plantID, 165, -1, -1, 45, 45, 200, false);
+    setPlantPhenologicalThresholds(plantID, 56, -1, -1, 45, 45, 200, false);
 
-    plant_instances.at(plantID).max_age = 365;
+    plant_instances.at(plantID).max_age = 106;
 
     return plantID;
 
@@ -3822,6 +3822,7 @@ uint PlantArchitecture::buildSennaAlexandrina_Plant(const helios::vec3 &base_pos
 void PlantArchitecture::initializeTurmericShoots() {
 
     // ---- Leaf Prototype ---- //
+    //https://gardeningsg.nparks.gov.sg/page-index/edible-plants/turmeric/
 
     LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
     leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/TurmericLeaf.png";
