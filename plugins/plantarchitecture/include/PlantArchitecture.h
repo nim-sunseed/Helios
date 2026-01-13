@@ -1729,6 +1729,10 @@ protected:
 
     uint buildOliveTree( const helios::vec3 &base_position );
 
+    void initializeOrangeTreeShoots();
+
+    uint buildOrangeTree( const helios::vec3 &base_position );
+
     void initializePistachioTreeShoots();
 
     uint buildPistachioTree( const helios::vec3 &base_position );

@@ -61,6 +61,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildMaizePlant(base_position);
     }else if( current_plant_model == "olive" ) {
         plantID = buildOliveTree(base_position);
+    }else if( current_plant_model == "orange" ) {
+        plantID = buildOrangeTree(base_position);
     }else if( current_plant_model == "pistachio" ) {
         plantID = buildPistachioTree(base_position);
     }else if( current_plant_model == "puncturevine" ) {
@@ -176,6 +178,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializeMaizeShoots();
     }else if( plant_label == "olive" ) {
         initializeOliveTreeShoots();
+    }else if( plant_label == "orange" ) {
+        initializeOrangeTreeShoots();
     }else if( plant_label == "pistachio" ) {
         initializePistachioTreeShoots();
     }else if( plant_label == "puncturevine" ) {
@@ -2127,6 +2131,172 @@ uint PlantArchitecture::buildOliveTree(const helios::vec3 &base_position) {
 
     uint uID_trunk = addBaseStemShoot(plantID, 19, make_AxisRotation(context_ptr->randu(0.f, 0.025f * M_PI), context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI)), shoot_types.at("trunk").phytomer_parameters.internode.radius_initial.val(), 0.01, 1.f, 1.f, 0, "trunk");
     appendPhytomerToShoot( plantID, uID_trunk, shoot_types.at("trunk").phytomer_parameters, 0, 0.01, 1, 1);
+
+    plant_instances.at(plantID).shoot_tree.at(uID_trunk)->meristem_is_alive = false;
+
+    auto phytomers = plant_instances.at(plantID).shoot_tree.at(uID_trunk)->phytomers;
+    for( const auto & phytomer : phytomers ){
+        phytomer->removeLeaf();
+        phytomer->setVegetativeBudState(BUD_DEAD);
+        phytomer->setFloralBudState(BUD_DEAD);
+    }
+
+    uint Nscaffolds = 4;//context_ptr->randu(4,5);
+
+    for( int i=0; i<Nscaffolds; i++ ) {
+        float pitch = context_ptr->randu(deg2rad(30), deg2rad(35));
+        uint uID_shoot = addChildShoot( plantID, uID_trunk, getShootNodeCount(plantID,uID_trunk)-i-1, context_ptr->randu(5, 7), make_AxisRotation(pitch, (float(i) + context_ptr->randu(-0.2f, 0.2f)) / float(Nscaffolds) * 2 * M_PI, 0), 0.007, shoot_types.at("scaffold").internode_length_max.val(), 1.f, 1.f, 0.5, "scaffold", 0);
+
+    }
+
+    makePlantDormant(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 165, -1, 3, 7, 20, 200, 600, true);
+    plant_instances.at(plantID).max_age = 1825;
+
+    return plantID;
+
+}
+// derived from olive tree
+void PlantArchitecture::initializeOrangeTreeShoots(){
+
+    // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.prototype_function = OliveLeafPrototype;  //kept at olive
+    leaf_prototype.unique_prototypes = 1;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters_orange(context_ptr->getRandomGenerator());
+
+    phytomer_parameters_orange.internode.pitch = 0;
+    phytomer_parameters_orange.internode.phyllotactic_angle.uniformDistribution(80, 100 );
+    phytomer_parameters_orange.internode.radius_initial = 0.002;
+    phytomer_parameters_orange.internode.length_segments = 1;
+    phytomer_parameters_orange.internode.image_texture = "plugins/plantarchitecture/assets/textures/OliveBark.jpg";
+    phytomer_parameters_orange.internode.max_floral_buds_per_petiole = 3;
+
+    phytomer_parameters_orange.petiole.petioles_per_internode = 2;
+    phytomer_parameters_orange.petiole.pitch.uniformDistribution(20,40);  //-40,-20
+    phytomer_parameters_orange.petiole.taper = 0.1;
+    phytomer_parameters_orange.petiole.curvature = 100;  //0
+    phytomer_parameters_orange.petiole.length = 0.005;
+    phytomer_parameters_orange.petiole.radius = 0.0005;
+    phytomer_parameters_orange.petiole.length_segments = 1; //1
+    phytomer_parameters_orange.petiole.radial_subdivisions = 1; //3
+    phytomer_parameters_orange.petiole.color = make_RGBcolor(0.61, 0.5, 0.24);
+
+    phytomer_parameters_orange.leaf.leaves_per_petiole = 1;
+    phytomer_parameters_orange.leaf.prototype_scale = 0.06;
+    phytomer_parameters_orange.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters_orange.peduncle.length = 0.065;
+    phytomer_parameters_orange.peduncle.radius = 0.001;
+    phytomer_parameters_orange.peduncle.pitch = 60;
+    phytomer_parameters_orange.peduncle.roll = 0;
+    phytomer_parameters_orange.peduncle.length_segments = 1;
+    phytomer_parameters_orange.peduncle.color = make_RGBcolor(0.7, 0.72, 0.7);
+
+    phytomer_parameters_orange.inflorescence.flowers_per_peduncle = 10;
+    phytomer_parameters_orange.inflorescence.flower_offset = 0.13;
+    phytomer_parameters_orange.inflorescence.pitch.uniformDistribution(80,100);
+    phytomer_parameters_orange.inflorescence.roll.uniformDistribution(0,360);
+    phytomer_parameters_orange.inflorescence.flower_prototype_scale = 0.01;
+//    phytomer_parameters_orange.inflorescence.flower_prototype_function = OliveFlowerPrototype;
+   // phytomer_parameters_orange.inflorescence.fruit_prototype_scale = 0.025;
+   // phytomer_parameters_orange.inflorescence.fruit_prototype_function = OliveFruitPrototype; //retain olive
+
+    // ---- Shoot Parameters ---- //
+
+    // Trunk
+    ShootParameters shoot_parameters_trunk(context_ptr->getRandomGenerator());
+    shoot_parameters_trunk.phytomer_parameters = phytomer_parameters_orange;
+    shoot_parameters_trunk.phytomer_parameters.internode.phyllotactic_angle = 0;
+    shoot_parameters_trunk.phytomer_parameters.internode.radius_initial = 0.025;
+    shoot_parameters_trunk.phytomer_parameters.internode.radial_subdivisions = 5; //20
+    shoot_parameters_trunk.max_nodes = 10; // 20
+    shoot_parameters_trunk.girth_area_factor = 6.f;
+    shoot_parameters_trunk.elongation_rate_max = 0.03;
+    shoot_parameters_trunk.vegetative_bud_break_probability_min = 0;
+    shoot_parameters_trunk.vegetative_bud_break_time = 0;
+    shoot_parameters_trunk.tortuosity = 1;
+    shoot_parameters_trunk.internode_length_max = 0.1;  //0.05
+    shoot_parameters_trunk.internode_length_decay_rate = 0;
+    shoot_parameters_trunk.defineChildShootTypes({"scaffold"},{1});
+
+    // Proleptic shoots
+    ShootParameters shoot_parameters_proleptic(context_ptr->getRandomGenerator());
+    shoot_parameters_proleptic.phytomer_parameters = phytomer_parameters_orange;
+//    shoot_parameters_proleptic.phytomer_parameters.phytomer_creation_function = OlivePhytomerCreationFunction;
+    shoot_parameters_proleptic.phytomer_parameters.phytomer_callback_function = OlivePhytomerCallbackFunction; //retain olive
+    shoot_parameters_proleptic.max_nodes.uniformDistribution(8,14);  //16,24
+    shoot_parameters_proleptic.max_nodes_per_season.uniformDistribution(5,8);  //8,12
+    shoot_parameters_proleptic.phyllochron_min = 2.0;
+    shoot_parameters_proleptic.elongation_rate_max = 0.5;  //0.25
+    shoot_parameters_proleptic.girth_area_factor = 5.f;
+    shoot_parameters_proleptic.vegetative_bud_break_probability_min = 0.035;
+    shoot_parameters_proleptic.vegetative_bud_break_probability_decay_rate = 1.0;
+    shoot_parameters_proleptic.vegetative_bud_break_time = 30;
+    shoot_parameters_proleptic.gravitropic_curvature.uniformDistribution(-100,50); //550,650
+    shoot_parameters_proleptic.tortuosity = 5;
+    shoot_parameters_proleptic.insertion_angle_tip.uniformDistribution( 35, 40);
+    shoot_parameters_proleptic.insertion_angle_decay_rate = 2;
+    shoot_parameters_proleptic.internode_length_max = 0.03;  //0.05
+    shoot_parameters_proleptic.internode_length_min = 0.01; //0.03
+    shoot_parameters_proleptic.internode_length_decay_rate = 0.004;
+    shoot_parameters_proleptic.fruit_set_probability = 0.25;
+    shoot_parameters_proleptic.flower_bud_break_probability = 0.25;
+    shoot_parameters_proleptic.max_terminal_floral_buds = 4;
+    shoot_parameters_proleptic.flowers_require_dormancy = true;
+    shoot_parameters_proleptic.growth_requires_dormancy = true;
+    shoot_parameters_proleptic.determinate_shoot_growth = false;
+    shoot_parameters_proleptic.defineChildShootTypes({"proleptic"},{1.0});
+
+    // Main scaffolds
+    ShootParameters shoot_parameters_scaffold = shoot_parameters_proleptic;
+    shoot_parameters_scaffold.phytomer_parameters.internode.radial_subdivisions = 3;
+    shoot_parameters_scaffold.max_nodes = 30;  //30
+    shoot_parameters_scaffold.max_nodes_per_season = 10;
+    shoot_parameters_scaffold.gravitropic_curvature = 700;
+    shoot_parameters_scaffold.internode_length_max = 0.03;
+    shoot_parameters_scaffold.tortuosity = 3;
+    shoot_parameters_scaffold.defineChildShootTypes({"proleptic"},{1.0});
+
+    defineShootType("trunk", shoot_parameters_trunk);
+    defineShootType("scaffold", shoot_parameters_scaffold);
+    defineShootType("proleptic", shoot_parameters_proleptic);
+
+}
+
+uint PlantArchitecture::buildOrangeTree(const helios::vec3 &base_position) {
+
+    if( shoot_types.empty() ){
+        //automatically initialize orange tree shoots
+        initializeOrangeTreeShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+    //why 19?// max internode context_ptr->randu(0.f, 2.f * M_PI)
+    uint uID_trunk = addBaseStemShoot(plantID, shoot_types.at("trunk").max_nodes.val(), make_AxisRotation(context_ptr->randu(0.f, 0.025f * M_PI), 
+    context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI)), shoot_types.at("trunk").phytomer_parameters.internode.radius_initial.val(), shoot_types.at("trunk").internode_length_max.val(), 1.f, 1.f, 0, "trunk");
+    
+
+    /*
+        uint uID_trunk = addBaseStemShoot(plantID, 
+            45, 
+            make_AxisRotation(context_ptr->randu(0.f, 0.025f * M_PI), context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI)), 
+            shoot_types.at("trunk").phytomer_parameters.internode.radius_initial.val(), 
+            0.1, 
+            1.f, 
+            1.f, 
+            0, 
+            "trunk");
+    
+
+    *///
+
+    appendPhytomerToShoot( plantID, uID_trunk, shoot_types.at("trunk").phytomer_parameters, 0, 0.01, 1, 1); //0.01
 
     plant_instances.at(plantID).shoot_tree.at(uID_trunk)->meristem_is_alive = false;
 
