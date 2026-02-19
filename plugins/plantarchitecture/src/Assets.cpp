@@ -497,6 +497,44 @@ void CowpeaPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint sh
 
 }
 
+void DragonFruitPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age ){
+
+    if( shoot_node_index<3 ) {
+        phytomer->setVegetativeBudState(BUD_DEAD);
+    }
+    //else{
+    //    phytomer->setFloralBudState(BUD_DEAD);
+    //}
+
+    //set leaf and internode scale based on position along the shoot
+    //float leaf_scale = fmin(1.f, 0.6 + 0.4 * plant_age / 8.f);
+    //phytomer->scaleLeafPrototypeScale(leaf_scale);
+    
+    //set internode length of first to almost zero
+    if( shoot_node_index==1 && phytomer->rank==0 ) {
+        float inode_scale = 0.001;
+        phytomer->scaleInternodeMaxLength(inode_scale);
+    }
+
+}
+
+void DragonFruitPhytomerCreationFunction2( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age ){
+
+    if( shoot_node_index<3 ) {
+        phytomer->setVegetativeBudState(BUD_DEAD);
+    }
+    //else{
+    //    phytomer->setFloralBudState(BUD_DEAD);
+    //}
+
+    //set leaf and internode scale based on position along the shoot
+    //float leaf_scale = fmin(1.f, 0.6 + 0.4 * plant_age / 8.f);
+    //phytomer->scaleLeafPrototypeScale(leaf_scale);
+   
+    //set internode length of first to almost zero
+
+}
+
 // Function to generate random float between min and max
 float random_float(float min, float max) {
     return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(max-min)));

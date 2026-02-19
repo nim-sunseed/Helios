@@ -1713,6 +1713,10 @@ protected:
 
     uint buildCowpeaPlant( const helios::vec3 &base_position );
 
+    void initializeDragonFruitShoots();
+
+    uint buildDragonFruitPlant( const helios::vec3 &base_position );
+
     void initializeGrapevineVSPShoots();
 
     uint buildGrapevineVSP( const helios::vec3 &base_position );

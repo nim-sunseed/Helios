@@ -43,10 +43,13 @@ int main(){
 
    PlantArchitecture plantarchitecture(&context); 
    //plantarchitecture.optionalOutputObjectData("rank");
-   plantarchitecture.loadPlantModelFromLibrary("orange");
+   plantarchitecture.loadPlantModelFromLibrary("dragonfruit");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int UUID_crop = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(1500);
+   plantarchitecture.advanceTime(340);
+
+
+   //////////////
     float height = plantarchitecture.getPlantHeight(UUID_crop);
 	float age = plantarchitecture.getPlantAge(UUID_crop);
 	std::vector prim_leafs = plantarchitecture.getAllLeafUUIDs();
@@ -65,7 +68,7 @@ int main(){
    std::cout<<"fruits primitive number "<<no_of_fruits<< std::endl;
    std::cout<<"leaf primitive number "<<no_of_leafs<< std::endl;
    std::cout<<"plant primitive number "<<no_plant<< std::endl;
-   //std::cout<<"leaf area "<<std::endl;
+   
   ///////////////////////
 
   // --------------------------
