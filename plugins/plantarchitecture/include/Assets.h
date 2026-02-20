@@ -6,6 +6,8 @@ uint GenericLeafPrototype(helios::Context *context_ptr, LeafPrototype* prototype
 uint SphereFruitPrototype( helios::Context* context_ptr, uint subdivisions );
 uint SphereFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open );
 
+uint ElongFruitPrototype( helios::Context* context_ptr, uint subdivisions );
+
 uint AlmondFruitPrototype( helios::Context* context_ptr, uint subdivisions );
 uint AlmondFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open=false );
 void AlmondPhytomerCreationFunction( std::shared_ptr<Phytomer> phytomer, uint shoot_node_index, uint parent_shoot_node_index, uint shoot_max_nodes, float plant_age );

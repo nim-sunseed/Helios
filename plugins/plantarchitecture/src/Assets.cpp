@@ -159,6 +159,12 @@ uint SphereFruitPrototype( helios::Context* context_ptr, uint subdivisions ){
     return objID;
 }
 
+uint ElongFruitPrototype( helios::Context* context_ptr, uint subdivisions ){
+    std::vector<uint> UUIDs = context_ptr->loadOBJ( "plugins/plantarchitecture/assets/obj/elong_fruit.obj", make_vec3(0.,0,0), 0,nullrotation, RGB::black, "ZUP", true );
+    uint objID = context_ptr->addPolymeshObject( UUIDs );
+    return objID;
+}
+
 uint SphereFlowerPrototype( helios::Context* context_ptr, uint subdivisions, bool flower_is_open ){
     std::vector<uint> UUIDs = context_ptr->loadOBJ( "plugins/plantarchitecture/assets/obj/sphere_fruit.obj", make_vec3(0.,0,0), 0,nullrotation, RGB::black, "ZUP", true );
     uint objID = context_ptr->addPolymeshObject( UUIDs );
