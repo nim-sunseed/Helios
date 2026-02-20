@@ -1646,9 +1646,9 @@ void PlantArchitecture::initializeDragonFruitShoots() {
     
     LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
     leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/SorghumLeaf.png";
-    leaf_prototype.leaf_aspect_ratio = 0.05;
+    leaf_prototype.leaf_aspect_ratio = 0.1;
     leaf_prototype.midrib_fold_fraction = 0.2f;
-    leaf_prototype.longitudinal_curvature =-0.65f;  //was init 0.15
+    leaf_prototype.longitudinal_curvature =-0.01f;  //was init 0.15
     leaf_prototype.lateral_curvature = 0.3; //0.4f;
     leaf_prototype.wave_period = 0.3f;
     leaf_prototype.wave_amplitude = 0.1f;
@@ -1659,7 +1659,7 @@ void PlantArchitecture::initializeDragonFruitShoots() {
     leaf_prototype2.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/SorghumLeaf.png";
     leaf_prototype2.leaf_aspect_ratio = 0.1;
     leaf_prototype2.midrib_fold_fraction = 0.2f;
-    //leaf_prototype.longitudinal_curvature =-0.15f;  //was init 0.15
+    leaf_prototype2.longitudinal_curvature =-0.65f;  //was init 0.15
     leaf_prototype2.lateral_curvature = 0.3; //0.4f;
     leaf_prototype2.wave_period = 0.3f;
     leaf_prototype2.wave_amplitude = 0.1f;
@@ -1670,7 +1670,7 @@ void PlantArchitecture::initializeDragonFruitShoots() {
 
     PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
     phytomer_parameters.internode.pitch = 0; //15; //10;
-    phytomer_parameters.internode.phyllotactic_angle=90; //80,100
+    //phytomer_parameters.internode.phyllotactic_angle=90; //80,100
     phytomer_parameters.internode.radius_initial = 0.0001;
     phytomer_parameters.internode.color = make_RGBcolor(0.4, 0.6, 0.0);
     phytomer_parameters.internode.length_segments = 6;
@@ -1713,10 +1713,11 @@ void PlantArchitecture::initializeDragonFruitShoots() {
     phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.65;
 
     PhytomerParameters phytomer_parameters2 = phytomer_parameters;
-    phytomer_parameters.leaf.leaflet_offset = 0.01;
-    phytomer_parameters.leaf.leaflet_scale = 1.0;
-    phytomer_parameters.leaf.prototype_scale = 0.5;
-    phytomer_parameters.leaf.prototype = leaf_prototype2;
+    phytomer_parameters2.leaf.leaflet_offset = 0.01;
+    phytomer_parameters2.leaf.leaflet_scale = 1.0;
+    phytomer_parameters2.leaf.prototype_scale = 0.5;
+    //phytomer_parameters2.internode.phyllotactic_angle = 180;
+    phytomer_parameters2.leaf.prototype = leaf_prototype2;
 
     // ---- Shoot Parameters ---- //
 
@@ -1725,12 +1726,12 @@ void PlantArchitecture::initializeDragonFruitShoots() {
     shoot_parameters.phytomer_parameters.phytomer_creation_function = DragonFruitPhytomerCreationFunction;
 
     shoot_parameters.max_nodes = 4;
-    //shoot_parameters.insertion_angle_tip = 30;  //30
+    shoot_parameters.insertion_angle_tip = 0;  //30
     shoot_parameters.insertion_angle_decay_rate = 0;
     shoot_parameters.internode_length_max = 0.3;
     shoot_parameters.internode_length_decay_rate = 0;
     shoot_parameters.internode_length_min = 0.05;
-    //shoot_parameters.base_roll = 90; //90
+    shoot_parameters.base_roll = 90; //90
     //shoot_parameters.base_yaw.uniformDistribution(-20,20);  //-20,20
     //shoot_parameters.gravitropic_curvature.uniformDistribution(-100,0);  //-10,0
     //shoot_parameters.tortuosity = 10;
@@ -1751,7 +1752,7 @@ void PlantArchitecture::initializeDragonFruitShoots() {
     shoot_parameters2.internode_length_max = 0.02;
     shoot_parameters2.internode_length_min = 0.01;
     shoot_parameters2.phytomer_parameters = phytomer_parameters2;
-    shoot_parameters2.max_nodes = 2;
+    shoot_parameters2.max_nodes = 4;
     shoot_parameters2.vegetative_bud_break_probability_min = 0.005;
     shoot_parameters2.phytomer_parameters.phytomer_creation_function = DragonFruitPhytomerCreationFunction2;
 
