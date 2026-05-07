@@ -1704,7 +1704,11 @@ protected:
     void initializeCucumber_VineShoots();
 
     uint buildCapsicumPlant( const helios::vec3 &base_position );
+
+    uint buildPotatoPlant( const helios::vec3 &base_position );
     
+    void initializePotatoShoots();
+
     void initializeCapsicumTrellisShoots();
 
     uint buildCapsicumTrellisPlant( const helios::vec3 &base_position );

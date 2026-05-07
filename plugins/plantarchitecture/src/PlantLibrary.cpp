@@ -95,6 +95,8 @@ uint PlantArchitecture::buildPlantInstanceFromLibrary( const helios::vec3 &base_
         plantID = buildSugarbeetPlant(base_position);
     }else if( current_plant_model == "tomato" ) {
         plantID = buildTomatoPlant(base_position);
+    }else if( current_plant_model == "potato" ) {
+        plantID = buildPotatoPlant(base_position);
     }else if( current_plant_model == "cherrytomato" ) {
         plantID = buildCherryTomatoPlant(base_position);
     }else if( current_plant_model == "turmeric" ) {
@@ -196,6 +198,8 @@ void PlantArchitecture::initializeDefaultShoots( const std::string &plant_label 
         initializePistachioTreeShoots();
     }else if( plant_label == "puncturevine" ) {
         initializePuncturevineShoots();
+    }else if( plant_label == "potato" ) {
+        initializePotatoShoots();
     }else if( plant_label == "easternredbud" ) {
         initializeEasternRedbudShoots();
     }else if( plant_label == "rice" ) {
@@ -1281,7 +1285,141 @@ uint PlantArchitecture::buildCapsicumPlant(const helios::vec3 &base_position) {
 
 }
 
+////
+void PlantArchitecture::initializePotatoShoots() {
 
+
+    // ---- Leaf Prototype ---- //
+
+    LeafPrototype leaf_prototype(context_ptr->getRandomGenerator());
+    leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/CapsicumLeaf.png";
+    leaf_prototype.leaf_aspect_ratio = 0.714f;
+    leaf_prototype.midrib_fold_fraction = 0.1f;
+    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.15, -0.05f);
+    leaf_prototype.lateral_curvature = -0.15f;
+    leaf_prototype.wave_period = 0.35f;
+    leaf_prototype.wave_amplitude = 0.0f;
+    leaf_prototype.subdivisions = 5;
+    leaf_prototype.unique_prototypes = 5;
+
+    // ---- Phytomer Parameters ---- //
+
+    PhytomerParameters phytomer_parameters(context_ptr->getRandomGenerator());
+
+    phytomer_parameters.internode.pitch = 5;
+    phytomer_parameters.internode.phyllotactic_angle.uniformDistribution(137.5-10, 137.5+10);
+    phytomer_parameters.internode.radius_initial = 0.001;
+    phytomer_parameters.internode.color = make_RGBcolor(0.213, 0.270, 0.056);
+    phytomer_parameters.internode.length_segments = 1;
+
+    phytomer_parameters.petiole.petioles_per_internode = 1;
+    
+    phytomer_parameters.petiole.pitch.uniformDistribution(-40, -20);
+    phytomer_parameters.petiole.radius = 0.001;
+    phytomer_parameters.petiole.length = 0.11;
+    phytomer_parameters.petiole.taper = 1;
+    phytomer_parameters.petiole.curvature = 10;
+    phytomer_parameters.petiole.color = phytomer_parameters.internode.color;
+    phytomer_parameters.petiole.length_segments = 1;
+
+    phytomer_parameters.leaf.leaves_per_petiole=7;
+    phytomer_parameters.leaf.leaflet_offset = 0.25;
+    phytomer_parameters.leaf.leaflet_scale = 0.75;
+    phytomer_parameters.leaf.pitch = 0;
+    phytomer_parameters.leaf.yaw = 10;
+    phytomer_parameters.leaf.roll = 0;
+    phytomer_parameters.leaf.prototype_scale.uniformDistribution(0.06,0.08);
+    phytomer_parameters.leaf.prototype = leaf_prototype;
+
+    phytomer_parameters.peduncle.length = 0.01;
+    phytomer_parameters.peduncle.radius = 0.001;
+    phytomer_parameters.peduncle.pitch.uniformDistribution(10,30);
+    phytomer_parameters.peduncle.roll = 0;
+    phytomer_parameters.peduncle.curvature = -700;
+    phytomer_parameters.peduncle.color = phytomer_parameters.internode.color;
+    phytomer_parameters.peduncle.length_segments = 3;
+    phytomer_parameters.peduncle.radial_subdivisions = 6;
+
+    phytomer_parameters.inflorescence.flowers_per_peduncle = 1;
+    phytomer_parameters.inflorescence.pitch = 20;
+    phytomer_parameters.inflorescence.roll.uniformDistribution(-30,30);
+
+
+
+    phytomer_parameters.inflorescence.flower_prototype_scale = 0.005;
+   // phytomer_parameters.inflorescence.flower_prototype_function = SphereFlowerPrototype; //proxy flowers
+   // phytomer_parameters.inflorescence.fruit_prototype_scale.uniformDistribution(0.01,0.05);
+   // phytomer_parameters.inflorescence.fruit_prototype_function = SphereFruitPrototype;  //proxy fruits as capsicumproto function throws an error couldnt find file
+    phytomer_parameters.inflorescence.fruit_gravity_factor_fraction = 0.9;
+    phytomer_parameters.inflorescence.unique_prototypes = 10;
+
+    PhytomerParameters phytomer_parameters_secondary = phytomer_parameters;
+
+    // ---- Shoot Parameters ---- //
+
+    ShootParameters shoot_parameters(context_ptr->getRandomGenerator());
+    shoot_parameters.phytomer_parameters = phytomer_parameters;
+    //shoot_parameters.phytomer_parameters.phytomer_creation_function = CapsicumPhytomerCreationFunction;
+
+    shoot_parameters.max_nodes = 20; //was 30 earlier
+    shoot_parameters.insertion_angle_tip = 30;  //CHANGED FROM 30
+    shoot_parameters.insertion_angle_decay_rate = 0;
+    shoot_parameters.internode_length_max = 0.02;
+    shoot_parameters.internode_length_min = 0.0;
+    shoot_parameters.internode_length_decay_rate = 0;
+    shoot_parameters.base_roll = 90;
+    shoot_parameters.base_yaw.uniformDistribution(-20,20);
+    shoot_parameters.gravitropic_curvature = 1100;  //CHANGED TO MORE UPRIGHT CURVING GROWTH
+    shoot_parameters.tortuosity = 3;
+
+    shoot_parameters.phyllochron_min = 9;   
+    shoot_parameters.elongation_rate_max = 0.1;
+    shoot_parameters.girth_area_factor = 2.f;
+    //shoot_parameters.vegetative_bud_break_time = 30;  //ideally this should only delay the growth
+    shoot_parameters.vegetative_bud_break_probability_min = 0.1; //want limited child shoots
+    shoot_parameters.vegetative_bud_break_probability_decay_rate = 0;
+    shoot_parameters.flower_bud_break_probability = 0.5;
+    shoot_parameters.fruit_set_probability = 0.5;
+    shoot_parameters.flowers_require_dormancy = false;
+    shoot_parameters.growth_requires_dormancy = false;
+    shoot_parameters.determinate_shoot_growth = true;
+
+    shoot_parameters.defineChildShootTypes({"secondary"},{1.0});
+
+    defineShootType("mainstem",shoot_parameters);
+
+    ShootParameters shoot_parameters_secondary = shoot_parameters;
+    shoot_parameters_secondary.phytomer_parameters = phytomer_parameters_secondary;
+    shoot_parameters_secondary.max_nodes = 2;
+    shoot_parameters_secondary.phyllochron_min = 12;
+    shoot_parameters_secondary.vegetative_bud_break_probability_min = 0.2;
+
+    defineShootType( "secondary", shoot_parameters_secondary);
+
+}
+
+uint PlantArchitecture::buildPotatoPlant(const helios::vec3 &base_position) {
+
+    if (shoot_types.empty()) {
+        //automatically initialize capsicum plant shoots
+        initializePotatoShoots();
+    }
+
+    uint plantID = addPlantInstance(base_position, 0);
+
+    AxisRotation base_rotation = make_AxisRotation(0, context_ptr->randu(0.f, 2.f * M_PI), context_ptr->randu(0.f, 2.f * M_PI));
+    uint uID_stem = addBaseStemShoot(plantID, 1, base_rotation, 0.002, shoot_types.at("mainstem").internode_length_max.val(), 0.01, 0.01, 0, "mainstem");
+
+    breakPlantDormancy(plantID);
+
+    setPlantPhenologicalThresholds(plantID, 0, 45, 20, 10, 15, 1000, false);
+
+    plant_instances.at(plantID).max_age = 45;
+    //no flowering, plant establishes itself in 45 days, and after tht constant
+
+    return plantID;
+
+}
 /////
 void PlantArchitecture::initializeCapsicumTrellisShoots() {
     // references - https://agricultureguruji.com/capsicum-cultivation-in-polyhouse/

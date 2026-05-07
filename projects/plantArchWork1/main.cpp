@@ -43,10 +43,10 @@ int main(){
 
    PlantArchitecture plantarchitecture(&context); 
    //plantarchitecture.optionalOutputObjectData("rank");
-   plantarchitecture.loadPlantModelFromLibrary("cucumber_vine");
+   plantarchitecture.loadPlantModelFromLibrary("potato");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int UUID_crop = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(90);
+   plantarchitecture.advanceTime(45);
 
 
    //////////////
