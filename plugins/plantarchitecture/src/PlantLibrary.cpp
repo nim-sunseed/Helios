@@ -1295,7 +1295,7 @@ void PlantArchitecture::initializePotatoShoots() {
     leaf_prototype.leaf_texture_file[0] = "plugins/plantarchitecture/assets/textures/CapsicumLeaf.png";
     leaf_prototype.leaf_aspect_ratio = 0.714f;
     leaf_prototype.midrib_fold_fraction = 0.1f;
-    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.15, -0.05f);
+    leaf_prototype.longitudinal_curvature.uniformDistribution(-0.15, 0.05f);
     leaf_prototype.lateral_curvature = -0.15f;
     leaf_prototype.wave_period = 0.35f;
     leaf_prototype.wave_amplitude = 0.0f;
@@ -1316,11 +1316,11 @@ void PlantArchitecture::initializePotatoShoots() {
     
     phytomer_parameters.petiole.pitch.uniformDistribution(-40, -20);
     phytomer_parameters.petiole.radius = 0.001;
-    phytomer_parameters.petiole.length = 0.11;
+    phytomer_parameters.petiole.length.normalDistribution(0.11,0.011);// = 0.11;
     phytomer_parameters.petiole.taper = 1;
-    phytomer_parameters.petiole.curvature = 10;
+    phytomer_parameters.petiole.curvature = 500;
     phytomer_parameters.petiole.color = phytomer_parameters.internode.color;
-    phytomer_parameters.petiole.length_segments = 1;
+    phytomer_parameters.petiole.length_segments = 5;
 
     phytomer_parameters.leaf.leaves_per_petiole=7;
     phytomer_parameters.leaf.leaflet_offset = 0.25;

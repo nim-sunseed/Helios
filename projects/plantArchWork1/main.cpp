@@ -48,7 +48,6 @@ int main(){
    int UUID_crop = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
    plantarchitecture.advanceTime(45);
 
-
    //////////////
     float height = plantarchitecture.getPlantHeight(UUID_crop);
 	float age = plantarchitecture.getPlantAge(UUID_crop);
