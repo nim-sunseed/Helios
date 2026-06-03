@@ -1096,8 +1096,8 @@ void PlantArchitecture::initializeBlueberryShoots() {
     shoot_parameters_cane.phytomer_parameters = phytomer_parameters_blueberry;
     shoot_parameters_cane.max_nodes = 20;
     shoot_parameters_cane.max_nodes_per_season = 20;
-    shoot_parameters_cane.phyllochron_min = 30;  //10
-    shoot_parameters_cane.elongation_rate_max = 0.027; //0.08
+    shoot_parameters_cane.phyllochron_min = 10;  //10
+    shoot_parameters_cane.elongation_rate_max = 0.08; //0.08
     shoot_parameters_cane.girth_area_factor = 12.f;  //12.f
     shoot_parameters_cane.vegetative_bud_break_probability_min = 0.7;
     shoot_parameters_cane.vegetative_bud_break_probability_decay_rate = 0.f;
@@ -1112,7 +1112,7 @@ void PlantArchitecture::initializeBlueberryShoots() {
     ShootParameters shoot_parameters_proleptic = shoot_parameters_cane;
     shoot_parameters_proleptic.max_nodes = 6;
     shoot_parameters_proleptic.max_nodes_per_season = 10;
-    shoot_parameters_proleptic.elongation_rate_max = 0.033;  //0.1
+    shoot_parameters_proleptic.elongation_rate_max = 0.1;  //0.1
     shoot_parameters_proleptic.girth_area_factor = 10.f; //10.f
     shoot_parameters_proleptic.vegetative_bud_break_probability_min = 0.2;
     shoot_parameters_proleptic.vegetative_bud_break_probability_decay_rate = -0.8;
@@ -1144,7 +1144,7 @@ uint PlantArchitecture::buildBlueberryBush(const helios::vec3 &base_position) {
     breakPlantDormancy(plantID);
 
     setPlantPhenologicalThresholds(plantID, 0, -1, -1, 75, 14, 2000, false);
-    plant_instances.at(plantID).max_age = 1095;
+    plant_instances.at(plantID).max_age = 365;
 
     return plantID;
 }
