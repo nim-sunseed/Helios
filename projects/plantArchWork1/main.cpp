@@ -43,10 +43,10 @@ int main(){
 
    PlantArchitecture plantarchitecture(&context); 
    //plantarchitecture.optionalOutputObjectData("rank");
-   plantarchitecture.loadPlantModelFromLibrary("potato");
+   plantarchitecture.loadPlantModelFromLibrary("blueberry");
     //plantarchitecture.enableGroundClipping(); //for a custom ground height, pass the height as argument
    int UUID_crop = plantarchitecture.buildPlantInstanceFromLibrary(nullorigin,0);
-   plantarchitecture.advanceTime(45);
+   plantarchitecture.advanceTime(365);
 
    //////////////
     float height = plantarchitecture.getPlantHeight(UUID_crop);
@@ -59,6 +59,16 @@ int main(){
 	long int no_of_leafs = prim_leafs.size();
 	long int no_of_fruits = prim_fruits.size();
 	long int no_plant = prim_plant.size(); 
+
+  ///loop through uuids
+  float leafArea=0.0f;
+  for (long int i=0;i<prim_leafs.size();i++)
+  {
+    leafArea+= context.getPrimitiveArea(prim_leafs[i]);
+    //context.get
+
+  }
+  std::cout<<"LEAF AREA "<<leafArea<<std::endl;
 	//context.get	                                                                    
 	//
    std::cout<< "Height: " << height<< std::endl;
@@ -114,7 +124,8 @@ int main(){
       std::cout << "  z: [" << b.minz << ", " << b.maxz << "] height = " << height_span << "\n";
     }
   }
-
+  float projected_canopy_area = 3.1416*(b.minx - b.maxx)*(b.miny - b.maxy)/4.0f;  //pi()*D1*D2/4
+  std::cout<<"LEAF AREA INDEX LAI " << leafArea/projected_canopy_area<<std::endl;
 
 
   //////////////////////

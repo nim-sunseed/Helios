@@ -1096,12 +1096,12 @@ void PlantArchitecture::initializeBlueberryShoots() {
     shoot_parameters_cane.phytomer_parameters = phytomer_parameters_blueberry;
     shoot_parameters_cane.max_nodes = 20;
     shoot_parameters_cane.max_nodes_per_season = 20;
-    shoot_parameters_cane.phyllochron_min = 10;
-    shoot_parameters_cane.elongation_rate_max = 0.08;
-    shoot_parameters_cane.girth_area_factor = 12.f;
+    shoot_parameters_cane.phyllochron_min = 30;  //10
+    shoot_parameters_cane.elongation_rate_max = 0.027; //0.08
+    shoot_parameters_cane.girth_area_factor = 12.f;  //12.f
     shoot_parameters_cane.vegetative_bud_break_probability_min = 0.7;
     shoot_parameters_cane.vegetative_bud_break_probability_decay_rate = 0.f;
-    shoot_parameters_cane.insertion_angle_tip.uniformDistribution(20, 80);
+    shoot_parameters_cane.insertion_angle_tip.uniformDistribution(20, 30);  //20,80 initially
     shoot_parameters_cane.internode_length_max = 0.0008;
     shoot_parameters_cane.internode_length_min = 0.0004;
     shoot_parameters_cane.internode_length_decay_rate = 0;
@@ -1112,15 +1112,15 @@ void PlantArchitecture::initializeBlueberryShoots() {
     ShootParameters shoot_parameters_proleptic = shoot_parameters_cane;
     shoot_parameters_proleptic.max_nodes = 6;
     shoot_parameters_proleptic.max_nodes_per_season = 10;
-    shoot_parameters_proleptic.elongation_rate_max = 0.1;
-    shoot_parameters_proleptic.girth_area_factor = 10.f;
+    shoot_parameters_proleptic.elongation_rate_max = 0.033;  //0.1
+    shoot_parameters_proleptic.girth_area_factor = 10.f; //10.f
     shoot_parameters_proleptic.vegetative_bud_break_probability_min = 0.2;
     shoot_parameters_proleptic.vegetative_bud_break_probability_decay_rate = -0.8;
     shoot_parameters_proleptic.internode_length_max = 0.03;
     shoot_parameters_proleptic.internode_length_min = 0.0025;
     shoot_parameters_proleptic.gravitropic_curvature = 900;
     shoot_parameters_proleptic.tortuosity = 1;
-    shoot_parameters_proleptic.insertion_angle_tip.uniformDistribution(20, 40);
+    shoot_parameters_proleptic.insertion_angle_tip.uniformDistribution(10, 20);
     shoot_parameters_proleptic.defineChildShootTypes({"blueberry_proleptic"}, {1.0});
 
     defineShootType("blueberry_cane", shoot_parameters_cane);
@@ -1143,8 +1143,8 @@ uint PlantArchitecture::buildBlueberryBush(const helios::vec3 &base_position) {
     // break dormancy so the bush is active from time zero
     breakPlantDormancy(plantID);
 
-    setPlantPhenologicalThresholds(plantID, 0, -1, -1, 75, 14, 1000, false);
-    plant_instances.at(plantID).max_age = 180;
+    setPlantPhenologicalThresholds(plantID, 0, -1, -1, 75, 14, 2000, false);
+    plant_instances.at(plantID).max_age = 1095;
 
     return plantID;
 }
